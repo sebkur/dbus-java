@@ -32,8 +32,8 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.exceptions.NotConnected;
-
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles a connection to DBus.
@@ -48,6 +48,9 @@ import cx.ath.matthew.debug.Debug;
  */
 public class DBusConnection extends AbstractConnection
 {
+
+	final static Logger logger = LoggerFactory.getLogger(DBusConnection.class);
+
 	/**
 	 * Add addresses of peers to a set which will watch for them to disappear
 	 * and automatically remove them from the set.
@@ -64,8 +67,8 @@ public class DBusConnection extends AbstractConnection
 				addSigHandler(new DBusMatchRule(DBus.NameOwnerChanged.class,
 						null, null), this);
 			} catch (DBusException DBe) {
-				if (EXCEPTION_DEBUG && Debug.debug) {
-					Debug.print(Debug.ERR, DBe);
+				if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+					logger.error("", DBe);
 				}
 			}
 		}
@@ -73,9 +76,9 @@ public class DBusConnection extends AbstractConnection
 		@Override
 		public void handle(DBus.NameOwnerChanged noc)
 		{
-			if (Debug.debug) {
-				Debug.print(Debug.DEBUG, "Received NameOwnerChanged(" + noc.name
-						+ "," + noc.old_owner + "," + noc.new_owner + ")");
+			if (logger.isDebugEnabled()) {
+				logger.debug("Received NameOwnerChanged(" + noc.name + ","
+						+ noc.old_owner + "," + noc.new_owner + ")");
 			}
 			if ("".equals(noc.new_owner) && addresses.contains(noc.name)) {
 				remove(noc.name);
@@ -85,8 +88,8 @@ public class DBusConnection extends AbstractConnection
 		@Override
 		public boolean add(String address)
 		{
-			if (Debug.debug) {
-				Debug.print(Debug.DEBUG, "Adding " + address);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Adding " + address);
 			}
 			synchronized (addresses) {
 				return addresses.add(address);
@@ -152,8 +155,8 @@ public class DBusConnection extends AbstractConnection
 		@Override
 		public boolean remove(Object o)
 		{
-			if (Debug.debug) {
-				Debug.print(Debug.DEBUG, "Removing " + o);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Removing " + o);
 			}
 			synchronized (addresses) {
 				return addresses.remove(o);
@@ -205,9 +208,8 @@ public class DBusConnection extends AbstractConnection
 		public void handle(DBusSignal s)
 		{
 			if (s instanceof org.freedesktop.DBus.Local.Disconnected) {
-				if (Debug.debug) {
-					Debug.print(Debug.WARN,
-							"Handling Disconnected signal from bus");
+				if (logger.isWarnEnabled()) {
+					logger.warn("Handling Disconnected signal from bus");
 				}
 				try {
 					Error err = new Error("org.freedesktop.DBus.Local",
@@ -336,15 +338,14 @@ public class DBusConnection extends AbstractConnection
 						r = new BufferedReader(new FileReader(addressfile));
 						String l;
 						while (null != (l = r.readLine())) {
-							if (Debug.debug) {
-								Debug.print(Debug.VERBOSE,
+							if (logger.isTraceEnabled()) {
+								logger.trace(
 										"Reading D-Bus session data: " + l);
 							}
 							if (l.matches("DBUS_SESSION_BUS_ADDRESS.*")) {
 								s = l.replaceAll("^[^=]*=", "");
-								if (Debug.debug) {
-									Debug.print(Debug.VERBOSE,
-											"Parsing " + l + " to " + s);
+								if (logger.isTraceEnabled()) {
+									logger.trace("Parsing " + l + " to " + s);
 								}
 							}
 						}
@@ -352,13 +353,13 @@ public class DBusConnection extends AbstractConnection
 							throw new DBusException(
 									_("Cannot Resolve Session Bus Address"));
 						}
-						if (Debug.debug) {
-							Debug.print(Debug.INFO, "Read bus address " + s
-									+ " from file " + addressfile.toString());
+						if (logger.isInfoEnabled()) {
+							logger.info("Read bus address " + s + " from file "
+									+ addressfile.toString());
 						}
 					} catch (Exception e) {
-						if (EXCEPTION_DEBUG && Debug.debug) {
-							Debug.print(Debug.ERR, e);
+						if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+							logger.error("", e);
 						}
 						throw new DBusException(
 								_("Cannot Resolve Session Bus Address"));
@@ -369,9 +370,8 @@ public class DBusConnection extends AbstractConnection
 				throw new DBusException(_("Invalid Bus Type: ") + bustype);
 			}
 			DBusConnection c = conn.get(s);
-			if (Debug.debug) {
-				Debug.print(Debug.VERBOSE,
-						"Getting bus connection for " + s + ": " + c);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Getting bus connection for " + s + ": " + c);
 			}
 			if (null != c) {
 				synchronized (c._reflock) {
@@ -379,9 +379,8 @@ public class DBusConnection extends AbstractConnection
 				}
 				return c;
 			} else {
-				if (Debug.debug) {
-					Debug.print(Debug.DEBUG,
-							"Creating new bus connection to: " + s);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Creating new bus connection to: " + s);
 				}
 				c = new DBusConnection(s);
 				conn.put(s, c);
@@ -404,15 +403,15 @@ public class DBusConnection extends AbstractConnection
 			transport = new Transport(addr, AbstractConnection.TIMEOUT);
 			connected = true;
 		} catch (IOException IOe) {
-			if (EXCEPTION_DEBUG && Debug.debug) {
-				Debug.print(Debug.ERR, IOe);
+			if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+				logger.error("", IOe);
 			}
 			disconnect();
 			throw new DBusException(
 					_("Failed to connect to bus ") + IOe.getMessage());
 		} catch (ParseException Pe) {
-			if (EXCEPTION_DEBUG && Debug.debug) {
-				Debug.print(Debug.ERR, Pe);
+			if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+				logger.error("", Pe);
 			}
 			disconnect();
 			throw new DBusException(
@@ -434,8 +433,8 @@ public class DBusConnection extends AbstractConnection
 		try {
 			busnames.add(_dbus.Hello());
 		} catch (DBusExecutionException DBEe) {
-			if (EXCEPTION_DEBUG && Debug.debug) {
-				Debug.print(Debug.ERR, DBEe);
+			if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+				logger.error("", DBEe);
 			}
 			throw new DBusException(DBEe.getMessage());
 		}
@@ -444,16 +443,16 @@ public class DBusConnection extends AbstractConnection
 	@SuppressWarnings("unchecked")
 	DBusInterface dynamicProxy(String source, String path) throws DBusException
 	{
-		if (Debug.debug) {
-			Debug.print(Debug.INFO, "Introspecting " + path + " on " + source
+		if (logger.isInfoEnabled()) {
+			logger.info("Introspecting " + path + " on " + source
 					+ " for dynamic proxy creation");
 		}
 		try {
 			DBus.Introspectable intro = getRemoteObject(source, path,
 					DBus.Introspectable.class);
 			String data = intro.Introspect();
-			if (Debug.debug) {
-				Debug.print(Debug.VERBOSE, "Got introspection data: " + data);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Got introspection data: " + data);
 			}
 			String[] tags = data.split("[<>]");
 			Vector<String> ifaces = new Vector<String>();
@@ -466,8 +465,8 @@ public class DBusConnection extends AbstractConnection
 			}
 			Vector<Class<? extends Object>> ifcs = new Vector<Class<? extends Object>>();
 			for (String iface : ifaces) {
-				if (Debug.debug) {
-					Debug.print(Debug.DEBUG, "Trying interface " + iface);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Trying interface " + iface);
 				}
 				int j = 0;
 				while (j >= 0) {
@@ -500,8 +499,8 @@ public class DBusConnection extends AbstractConnection
 			importedObjects.put(newi, ro);
 			return newi;
 		} catch (Exception e) {
-			if (EXCEPTION_DEBUG && Debug.debug) {
-				Debug.print(Debug.ERR, e);
+			if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+				logger.error("", e);
 			}
 			throw new DBusException(MessageFormat.format(
 					_("Failed to create proxy object for {0} exported by {1}. Reason: {2}"),
@@ -551,8 +550,8 @@ public class DBusConnection extends AbstractConnection
 			try {
 				rv = _dbus.ReleaseName(busname);
 			} catch (DBusExecutionException DBEe) {
-				if (EXCEPTION_DEBUG && Debug.debug) {
-					Debug.print(Debug.ERR, DBEe);
+				if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+					logger.error("", DBEe);
 				}
 				throw new DBusException(DBEe.getMessage());
 			}
@@ -584,8 +583,8 @@ public class DBusConnection extends AbstractConnection
 						new UInt32(DBus.DBUS_NAME_FLAG_REPLACE_EXISTING
 								| DBus.DBUS_NAME_FLAG_DO_NOT_QUEUE));
 			} catch (DBusExecutionException DBEe) {
-				if (EXCEPTION_DEBUG && Debug.debug) {
-					Debug.print(Debug.ERR, DBEe);
+				if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+					logger.error("", DBEe);
 				}
 				throw new DBusException(DBEe.getMessage());
 			}
@@ -958,12 +957,12 @@ public class DBusConnection extends AbstractConnection
 					try {
 						_dbus.RemoveMatch(rule.toString());
 					} catch (NotConnected NC) {
-						if (EXCEPTION_DEBUG && Debug.debug) {
-							Debug.print(Debug.ERR, NC);
+						if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+							logger.error("", NC);
 						}
 					} catch (DBusExecutionException DBEe) {
-						if (EXCEPTION_DEBUG && Debug.debug) {
-							Debug.print(Debug.ERR, DBEe);
+						if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+							logger.error("", DBEe);
 						}
 						throw new DBusException(DBEe.getMessage());
 					}
@@ -1057,8 +1056,8 @@ public class DBusConnection extends AbstractConnection
 		try {
 			_dbus.AddMatch(rule.toString());
 		} catch (DBusExecutionException DBEe) {
-			if (EXCEPTION_DEBUG && Debug.debug) {
-				Debug.print(Debug.ERR, DBEe);
+			if (EXCEPTION_DEBUG && logger.isErrorEnabled()) {
+				logger.error("", DBEe);
 			}
 			throw new DBusException(DBEe.getMessage());
 		}
@@ -1087,8 +1086,8 @@ public class DBusConnection extends AbstractConnection
 		synchronized (conn) {
 			synchronized (_reflock) {
 				if (0 == --_refcount) {
-					if (Debug.debug) {
-						Debug.print(Debug.INFO, "Disconnecting DBusConnection");
+					if (logger.isInfoEnabled()) {
+						logger.info("Disconnecting DBusConnection");
 					}
 					// Set all pending messages to have an error.
 					try {
