@@ -13,8 +13,8 @@ package org.freedesktop.dbus.test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.freedesktop.DBus;
@@ -26,11 +26,17 @@ import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class cross_test_server
 		implements DBus.Binding.Tests, DBus.Binding.SingleTests,
 		DBusSigHandler<DBus.Binding.TestClient.Trigger>
 {
+
+	final static Logger logger = LoggerFactory
+			.getLogger(cross_test_server.class);
+
 	private DBusConnection conn;
 	boolean run = true;
 	private Set<String> done = new TreeSet<String>();
@@ -74,11 +80,13 @@ public class cross_test_server
 		this.conn = conn;
 	}
 
+	@Override
 	public boolean isRemote()
 	{
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	@DBus.Description("Returns whatever it is passed")
 	public <T> Variant<T> Identity(Variant<T> input)
@@ -88,6 +96,7 @@ public class cross_test_server
 		return new Variant(input.getValue());
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public byte IdentityByte(byte input)
 	{
@@ -96,6 +105,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public boolean IdentityBool(boolean input)
 	{
@@ -104,6 +114,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public short IdentityInt16(short input)
 	{
@@ -112,6 +123,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt16 IdentityUInt16(UInt16 input)
 	{
@@ -120,6 +132,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public int IdentityInt32(int input)
 	{
@@ -128,6 +141,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt32 IdentityUInt32(UInt32 input)
 	{
@@ -136,6 +150,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public long IdentityInt64(long input)
 	{
@@ -144,6 +159,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt64 IdentityUInt64(UInt64 input)
 	{
@@ -152,6 +168,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public double IdentityDouble(double input)
 	{
@@ -160,6 +177,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public String IdentityString(String input)
 	{
@@ -168,6 +186,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public <T> Variant<T>[] IdentityArray(Variant<T>[] input)
 	{
@@ -176,6 +195,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public byte[] IdentityByteArray(byte[] input)
 	{
@@ -184,6 +204,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public boolean[] IdentityBoolArray(boolean[] input)
 	{
@@ -192,6 +213,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public short[] IdentityInt16Array(short[] input)
 	{
@@ -200,6 +222,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt16[] IdentityUInt16Array(UInt16[] input)
 	{
@@ -209,6 +232,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public int[] IdentityInt32Array(int[] input)
 	{
@@ -217,6 +241,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt32[] IdentityUInt32Array(UInt32[] input)
 	{
@@ -226,6 +251,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public long[] IdentityInt64Array(long[] input)
 	{
@@ -234,6 +260,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public UInt64[] IdentityUInt64Array(UInt64[] input)
 	{
@@ -243,6 +270,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public double[] IdentityDoubleArray(double[] input)
 	{
@@ -252,6 +280,7 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns whatever it is passed")
 	public String[] IdentityStringArray(String[] input)
 	{
@@ -261,28 +290,33 @@ public class cross_test_server
 		return input;
 	}
 
+	@Override
 	@DBus.Description("Returns the sum of the values in the input list")
 	public long Sum(int[] a)
 	{
 		done.add("org.freedesktop.DBus.Binding.Tests.Sum");
 		notdone.remove("org.freedesktop.DBus.Binding.Tests.Sum");
 		long sum = 0;
-		for (int b : a)
+		for (int b : a) {
 			sum += b;
+		}
 		return sum;
 	}
 
+	@Override
 	@DBus.Description("Returns the sum of the values in the input list")
 	public UInt32 Sum(byte[] a)
 	{
 		done.add("org.freedesktop.DBus.Binding.SingleTests.Sum");
 		notdone.remove("org.freedesktop.DBus.Binding.SingleTests.Sum");
 		int sum = 0;
-		for (byte b : a)
+		for (byte b : a) {
 			sum += (b < 0 ? b + 256 : b);
+		}
 		return new UInt32(sum % (UInt32.MAX_VALUE + 1));
 	}
 
+	@Override
 	@DBus.Description("Given a map of A => B, should return a map of B => a list of all the As which mapped to B")
 	public Map<String, List<String>> InvertMapping(Map<String, String> a)
 	{
@@ -301,6 +335,7 @@ public class cross_test_server
 		return m;
 	}
 
+	@Override
 	@DBus.Description("This method returns the contents of a struct as separate values")
 	public DBus.Binding.Triplet<String, UInt32, Short> DeStruct(
 			DBus.Binding.TestStruct a)
@@ -310,6 +345,7 @@ public class cross_test_server
 		return new DBus.Binding.Triplet<String, UInt32, Short>(a.a, a.b, a.c);
 	}
 
+	@Override
 	@DBus.Description("Given any compound type as a variant, return all the primitive types recursively contained within as an array of variants")
 	@SuppressWarnings("unchecked")
 	public List<Variant<Object>> Primitize(Variant<Object> a)
@@ -319,6 +355,7 @@ public class cross_test_server
 		return cross_test_client.PrimitizeRecurse(a.getValue(), a.getType());
 	}
 
+	@Override
 	@DBus.Description("inverts it's input")
 	public boolean Invert(boolean a)
 	{
@@ -327,6 +364,7 @@ public class cross_test_server
 		return !a;
 	}
 
+	@Override
 	@DBus.Description("triggers sending of a signal from the supplied object with the given parameter")
 	public void Trigger(String a, UInt64 b)
 	{
@@ -339,6 +377,7 @@ public class cross_test_server
 		}
 	}
 
+	@Override
 	public void Exit()
 	{
 		done.add("org.freedesktop.DBus.Binding.Tests.Exit");
@@ -349,6 +388,7 @@ public class cross_test_server
 		}
 	}
 
+	@Override
 	public void handle(DBus.Binding.TestClient.Trigger t)
 	{
 		done.add("org.freedesktop.DBus.Binding.TestClient.Trigger");
@@ -379,10 +419,12 @@ public class cross_test_server
 					}
 				}
 			}
-			for (String s : cts.done)
+			for (String s : cts.done) {
 				System.out.println(s + " ok");
-			for (String s : cts.notdone)
+			}
+			for (String s : cts.notdone) {
 				System.out.println(s + " untested");
+			}
 			conn.disconnect();
 			System.exit(0);
 		} catch (DBusException DBe) {

@@ -10,22 +10,25 @@
 */
 package org.freedesktop.dbus.test;
 
-import cx.ath.matthew.debug.Debug;
 import org.freedesktop.dbus.BusAddress;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Message;
 import org.freedesktop.dbus.MethodCall;
 import org.freedesktop.dbus.Transport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class test_low_level
 {
+
+	final static Logger logger = LoggerFactory.getLogger(test_low_level.class);
+
 	public static void main(String[] args) throws Exception
 	{
-		Debug.setHexDump(true);
 		String addr = System.getenv("DBUS_SESSION_BUS_ADDRESS");
-		Debug.print(addr);
+		logger.debug(addr);
 		BusAddress address = new BusAddress(addr);
-		Debug.print(address);
+		logger.debug(address.toString());
 
 		Transport conn = new Transport(address);
 
@@ -34,29 +37,30 @@ public class test_low_level
 				(byte) 0, null);
 		conn.mout.writeMessage(m);
 		m = conn.min.readMessage();
-		Debug.print(m.getClass());
-		Debug.print(m);
+		logger.debug(m.getClass().toString());
+		logger.debug(m.toString());
 		m = conn.min.readMessage();
-		Debug.print(m.getClass());
-		Debug.print(m);
+		logger.debug(m.getClass().toString());
+		logger.debug(m.toString());
 		m = conn.min.readMessage();
-		Debug.print("" + m);
+		logger.debug(m.toString());
 		m = new MethodCall("org.freedesktop.DBus", "/", null, "Hello", (byte) 0,
 				null);
 		conn.mout.writeMessage(m);
 		m = conn.min.readMessage();
-		Debug.print(m);
+		logger.debug(m.toString());
 
 		m = new MethodCall("org.freedesktop.DBus", "/org/freedesktop/DBus",
 				"org.freedesktop.DBus", "RequestName", (byte) 0, "su",
 				"org.testname", 0);
 		conn.mout.writeMessage(m);
 		m = conn.min.readMessage();
-		Debug.print(m);
+		logger.debug(m.toString());
 		m = new DBusSignal(null, "/foo", "org.foo", "Foo", null);
 		conn.mout.writeMessage(m);
 		m = conn.min.readMessage();
-		Debug.print(m);
+		logger.debug(m.toString());
 		conn.disconnect();
 	}
+
 }
