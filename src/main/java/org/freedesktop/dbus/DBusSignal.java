@@ -16,10 +16,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.MessageFormatException;
@@ -48,7 +49,7 @@ public class DBusSignal extends Message
 		headers.put(Message.HeaderField.MEMBER, member);
 		headers.put(Message.HeaderField.INTERFACE, iface);
 
-		Vector<Object> hargs = new Vector<Object>();
+		List<Object> hargs = new ArrayList<Object>();
 		hargs.add(new Object[] { Message.HeaderField.PATH,
 				new Object[] { ArgumentType.OBJECT_PATH_STRING, path } });
 		hargs.add(new Object[] { Message.HeaderField.INTERFACE,
@@ -270,7 +271,7 @@ public class DBusSignal extends Message
 		headers.put(Message.HeaderField.MEMBER, member);
 		headers.put(Message.HeaderField.INTERFACE, iface);
 
-		Vector<Object> hargs = new Vector<Object>();
+		List<Object> hargs = new ArrayList<Object>();
 		hargs.add(new Object[] { Message.HeaderField.PATH,
 				new Object[] { ArgumentType.OBJECT_PATH_STRING, objectpath } });
 		hargs.add(new Object[] { Message.HeaderField.INTERFACE,

@@ -10,12 +10,12 @@
 */
 package org.freedesktop.dbus.test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
@@ -34,8 +34,7 @@ public class CrossTestServer
 		DBusSigHandler<DBus.Binding.TestClient.Trigger>
 {
 
-	final static Logger logger = LoggerFactory
-			.getLogger(CrossTestServer.class);
+	final static Logger logger = LoggerFactory.getLogger(CrossTestServer.class);
 
 	private DBusConnection conn;
 	boolean run = true;
@@ -327,7 +326,7 @@ public class CrossTestServer
 			String b = a.get(s);
 			List<String> l = m.get(b);
 			if (null == l) {
-				l = new Vector<String>();
+				l = new ArrayList<String>();
 				m.put(b, l);
 			}
 			l.add(s);

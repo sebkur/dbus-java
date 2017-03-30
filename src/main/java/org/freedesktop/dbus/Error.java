@@ -13,7 +13,8 @@ package org.freedesktop.dbus;
 import static org.freedesktop.dbus.Gettext._;
 
 import java.lang.reflect.Constructor;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
@@ -52,7 +53,7 @@ public class Error extends Message
 		headers.put(Message.HeaderField.REPLY_SERIAL, replyserial);
 		headers.put(Message.HeaderField.ERROR_NAME, errorName);
 
-		Vector<Object> hargs = new Vector<Object>();
+		List<Object> hargs = new ArrayList<Object>();
 		hargs.add(new Object[] { Message.HeaderField.ERROR_NAME,
 				new Object[] { ArgumentType.STRING_STRING, errorName } });
 		hargs.add(new Object[] { Message.HeaderField.REPLY_SERIAL,

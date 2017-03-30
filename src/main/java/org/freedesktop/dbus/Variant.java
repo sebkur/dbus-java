@@ -14,7 +14,8 @@ import static org.freedesktop.dbus.Gettext._;
 
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -124,7 +125,7 @@ public class Variant<T>
 		}
 		this.sig = sig;
 		try {
-			Vector<Type> ts = new Vector<Type>();
+			List<Type> ts = new ArrayList<Type>();
 			Marshalling.getJavaType(sig, ts, 1);
 			if (ts.size() != 1) {
 				throw new IllegalArgumentException(

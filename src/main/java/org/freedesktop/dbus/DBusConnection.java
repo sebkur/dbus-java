@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -393,7 +393,7 @@ public class DBusConnection extends AbstractConnection
 	private DBusConnection(String address) throws DBusException
 	{
 		super(address);
-		busnames = new Vector<String>();
+		busnames = new ArrayList<String>();
 
 		synchronized (_reflock) {
 			_refcount = 1;
@@ -455,7 +455,7 @@ public class DBusConnection extends AbstractConnection
 				logger.trace("Got introspection data: " + data);
 			}
 			String[] tags = data.split("[<>]");
-			Vector<String> ifaces = new Vector<String>();
+			List<String> ifaces = new ArrayList<String>();
 			for (String tag : tags) {
 				if (tag.startsWith("interface")) {
 					ifaces.add(tag.replaceAll(
@@ -463,7 +463,7 @@ public class DBusConnection extends AbstractConnection
 							"$1"));
 				}
 			}
-			Vector<Class<? extends Object>> ifcs = new Vector<Class<? extends Object>>();
+			List<Class<? extends Object>> ifcs = new ArrayList<Class<? extends Object>>();
 			for (String iface : ifaces) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Trying interface " + iface);
@@ -948,7 +948,7 @@ public class DBusConnection extends AbstractConnection
 		SignalTuple key = new SignalTuple(rule.getInterface(), rule.getMember(),
 				rule.getObject(), rule.getSource());
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> v = handledSignals
+			List<DBusSigHandler<? extends DBusSignal>> v = handledSignals
 					.get(key);
 			if (null != v) {
 				v.remove(handler);
@@ -1064,10 +1064,10 @@ public class DBusConnection extends AbstractConnection
 		SignalTuple key = new SignalTuple(rule.getInterface(), rule.getMember(),
 				rule.getObject(), rule.getSource());
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> v = handledSignals
+			List<DBusSigHandler<? extends DBusSignal>> v = handledSignals
 					.get(key);
 			if (null == v) {
-				v = new Vector<DBusSigHandler<? extends DBusSignal>>();
+				v = new ArrayList<DBusSigHandler<? extends DBusSignal>>();
 				v.add(handler);
 				handledSignals.put(key, v);
 			} else {

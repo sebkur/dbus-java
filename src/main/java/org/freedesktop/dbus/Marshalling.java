@@ -21,11 +21,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.types.DBusListType;
@@ -231,7 +231,7 @@ public class Marshalling
 			} else if (Tuple.class.isAssignableFrom(
 					(Class<? extends Object>) p.getRawType())) {
 				Type[] ts = p.getActualTypeArguments();
-				Vector<String> vs = new Vector<String>();
+				List<String> vs = new ArrayList<String>();
 				for (Type t : ts) {
 					for (String s : recursiveGetDBusType(t, false, level + 1)) {
 						vs.add(s);
@@ -352,7 +352,7 @@ public class Marshalling
 	 * @param dbus
 	 *            The DBus type or types.
 	 * @param rv
-	 *            Vector to return the types in.
+	 *            List to return the types in.
 	 * @param limit
 	 *            Maximum number of types to parse (-1 == nolimit).
 	 * @return number of characters parsed from the type string.
@@ -380,7 +380,7 @@ public class Marshalling
 						}
 					}
 
-					Vector<Type> contained = new Vector<Type>();
+					List<Type> contained = new ArrayList<Type>();
 					int c = getJavaType(dbus.substring(i + 1, j - 1), contained,
 							-1);
 					rv.add(new DBusStructType(contained.toArray(new Type[0])));
@@ -389,13 +389,13 @@ public class Marshalling
 				case Message.ArgumentType.ARRAY:
 					if (Message.ArgumentType.DICT_ENTRY1 == dbus
 							.charAt(i + 1)) {
-						contained = new Vector<Type>();
+						contained = new ArrayList<Type>();
 						c = getJavaType(dbus.substring(i + 2), contained, 2);
 						rv.add(new DBusMapType(contained.get(0),
 								contained.get(1)));
 						i += (c + 2);
 					} else {
-						contained = new Vector<Type>();
+						contained = new ArrayList<Type>();
 						c = getJavaType(dbus.substring(i + 1), contained, 1);
 						rv.add(new DBusListType(contained.get(0)));
 						i += c;
@@ -445,7 +445,7 @@ public class Marshalling
 					break;
 				case Message.ArgumentType.DICT_ENTRY1:
 					rv.add(Map.Entry.class);
-					contained = new Vector<Type>();
+					contained = new ArrayList<Type>();
 					c = getJavaType(dbus.substring(i + 1), contained, 2);
 					i += c + 1;
 					break;
@@ -574,7 +574,7 @@ public class Marshalling
 		if (type instanceof Class && ((Class) type).isArray()
 				&& ((Class) type).getComponentType().equals(Type.class)
 				&& parameter instanceof String) {
-			Vector<Type> rv = new Vector<Type>();
+			List<Type> rv = new ArrayList<Type>();
 			getJavaType((String) parameter, rv, -1);
 			parameter = rv.toArray(new Type[0]);
 		}

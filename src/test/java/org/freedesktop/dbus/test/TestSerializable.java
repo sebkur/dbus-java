@@ -10,19 +10,20 @@
 */
 package org.freedesktop.dbus.test;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.freedesktop.dbus.DBusSerializable;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TestSerializable<A> implements DBusSerializable
 {
+
 	private int a;
 	private String b;
-	private Vector<Integer> c;
+	private List<Integer> c;
 
-	public TestSerializable(int a, A b, Vector<Integer> c)
+	public TestSerializable(int a, A b, List<Integer> c)
 	{
 		this.a = a;
 		this.b = b.toString();
@@ -37,9 +38,10 @@ public class TestSerializable<A> implements DBusSerializable
 	{
 		this.a = a;
 		this.b = b;
-		this.c = new Vector<Integer>(c);
+		this.c = new ArrayList<Integer>(c);
 	}
 
+	@Override
 	public Object[] serialize() throws DBusException
 	{
 		return new Object[] { a, b, c };
@@ -55,13 +57,15 @@ public class TestSerializable<A> implements DBusSerializable
 		return b;
 	}
 
-	public Vector<Integer> getVector()
+	public List<Integer> getList()
 	{
 		return c;
 	}
 
+	@Override
 	public String toString()
 	{
 		return "TestSerializable{" + a + "," + b + "," + c + "}";
 	}
+
 }

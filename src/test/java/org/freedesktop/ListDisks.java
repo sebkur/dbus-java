@@ -1,6 +1,6 @@
 package org.freedesktop;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Path;
@@ -30,7 +30,7 @@ public class ListDisks
 
 			DBus.Properties diskProps = conn.getRemoteObject(idDisks,
 					path.getPath(), DBus.Properties.class);
-			Vector<String> mountPaths = diskProps.Get(idDevices,
+			List<String> mountPaths = diskProps.Get(idDevices,
 					"DeviceMountPaths");
 
 			UInt64 size = diskProps.Get(idDevices, "DeviceSize");

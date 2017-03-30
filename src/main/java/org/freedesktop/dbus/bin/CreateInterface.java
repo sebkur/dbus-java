@@ -22,16 +22,16 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,7 +43,6 @@ import org.freedesktop.dbus.Marshalling;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.types.DBusStructType;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,23 +66,27 @@ public class CreateInterface
 			if (null != structs && t instanceof DBusStructType) {
 				int num = 1;
 				String name = "Struct";
-				while (null != structs.get(new StructStruct(name + num)))
+				while (null != structs.get(new StructStruct(name + num))) {
 					num++;
+				}
 				name = name + num;
 				structs.put(new StructStruct(name),
 						((ParameterizedType) t).getActualTypeArguments());
 				return name;
 			}
-			if (null != imports)
+			if (null != imports) {
 				imports.add(c.getName());
-			if (fullnames)
+			}
+			if (fullnames) {
 				return c.getName();
-			else
+			} else {
 				s = c.getSimpleName();
+			}
 			s += '<';
 			Type[] ts = ((ParameterizedType) t).getActualTypeArguments();
-			for (Type st : ts)
+			for (Type st : ts) {
 				s += collapseType(st, imports, structs, true, fullnames) + ',';
+			}
 			s = s.replaceAll(",$", ">");
 			return s;
 		} else if (t instanceof Class) {
@@ -93,13 +96,15 @@ public class CreateInterface
 						container, fullnames) + "[]";
 			} else {
 				Package p = c.getPackage();
-				if (null != imports && !"java.lang".equals(p.getName()))
+				if (null != imports && !"java.lang".equals(p.getName())) {
 					imports.add(c.getName());
+				}
 				if (container) {
-					if (fullnames)
+					if (fullnames) {
 						return c.getName();
-					else
+					} else {
 						return c.getSimpleName();
+					}
 				} else {
 					try {
 						Field f = c.getField("TYPE");
@@ -111,17 +116,19 @@ public class CreateInterface
 					}
 				}
 			}
-		} else
+		} else {
 			return "";
+		}
 	}
 
 	private static String getJavaType(String dbus, Set<String> imports,
 			Map<StructStruct, Type[]> structs, boolean container,
 			boolean fullnames) throws DBusException
 	{
-		if (null == dbus || "".equals(dbus))
+		if (null == dbus || "".equals(dbus)) {
 			return "";
-		Vector<Type> v = new Vector<Type>();
+		}
+		List<Type> v = new ArrayList<Type>();
 		int c = Marshalling.getJavaType(dbus, v, 1);
 		Type t = v.get(0);
 		return collapseType(t, imports, structs, container, fullnames);
@@ -137,7 +144,7 @@ public class CreateInterface
 	}
 
 	@SuppressWarnings("fallthrough")
-	String parseReturns(Vector<Element> out, Set<String> imports,
+	String parseReturns(List<Element> out, Set<String> imports,
 			Map<String, Integer> tuples, Map<StructStruct, Type[]> structs)
 			throws DBusException
 	{
@@ -161,14 +168,16 @@ public class CreateInterface
 		case 7:
 			name = names[out.size() - 2];
 		default:
-			if (null == name)
+			if (null == name) {
 				name = "NTuple" + out.size();
+			}
 
 			tuples.put(name, out.size());
 			sig += name + "<";
-			for (Element arg : out)
+			for (Element arg : out) {
 				sig += getJavaType(arg.getAttribute("type"), imports, structs,
 						true, false) + ", ";
+			}
 			sig = sig.replaceAll(", $", "> ");
 			break;
 		}
@@ -179,8 +188,8 @@ public class CreateInterface
 			Map<String, Integer> tuples, Map<StructStruct, Type[]> structs,
 			Set<String> exceptions, Set<String> anns) throws DBusException
 	{
-		Vector<Element> in = new Vector<Element>();
-		Vector<Element> out = new Vector<Element>();
+		List<Element> in = new ArrayList<Element>();
+		List<Element> out = new ArrayList<Element>();
 		if (null == meth.getAttribute("name")
 				|| "".equals(meth.getAttribute("name"))) {
 			System.err.println(_("ERROR: Method name was blank, failed"));
@@ -191,8 +200,9 @@ public class CreateInterface
 
 		for (Node a : new IterableNodeList(meth.getChildNodes())) {
 
-			if (Node.ELEMENT_NODE != a.getNodeType())
+			if (Node.ELEMENT_NODE != a.getNodeType()) {
 				continue;
+			}
 
 			checkNode(a, "arg", "annotation");
 
@@ -200,21 +210,24 @@ public class CreateInterface
 				Element arg = (Element) a;
 
 				// methods default to in
-				if ("out".equals(arg.getAttribute("direction")))
+				if ("out".equals(arg.getAttribute("direction"))) {
 					out.add(arg);
-				else
+				} else {
 					in.add(arg);
+				}
 			} else if ("annotation".equals(a.getNodeName())) {
 				Element e = (Element) a;
 				if (e.getAttribute("name")
 						.equals("org.freedesktop.DBus.Method.Error")) {
-					if (null == throwses)
+					if (null == throwses) {
 						throwses = e.getAttribute("value");
-					else
+					} else {
 						throwses += ", " + e.getAttribute("value");
+					}
 					exceptions.add(e.getAttribute("value"));
-				} else
+				} else {
 					annotations += parseAnnotation(e, imports, anns);
+				}
 			}
 		}
 
@@ -230,8 +243,9 @@ public class CreateInterface
 			String type = getJavaType(arg.getAttribute("type"), imports,
 					structs, false, false);
 			String name = arg.getAttribute("name");
-			if (null == name || "".equals(name))
+			if (null == name || "".equals(name)) {
 				name = "" + (defaultname++);
+			}
 			params += type + " " + mangle(name) + ", ";
 		}
 		return ("".equals(comment) ? "" : "   /**\n" + comment + "   */\n")
@@ -244,27 +258,29 @@ public class CreateInterface
 			throws DBusException
 	{
 		Map<String, String> params = new HashMap<String, String>();
-		Vector<String> porder = new Vector<String>();
+		List<String> porder = new ArrayList<String>();
 		char defaultname = 'a';
 		imports.add("org.freedesktop.dbus.DBusSignal");
 		imports.add("org.freedesktop.dbus.exceptions.DBusException");
 		String annotations = "";
 		for (Node a : new IterableNodeList(signal.getChildNodes())) {
 
-			if (Node.ELEMENT_NODE != a.getNodeType())
+			if (Node.ELEMENT_NODE != a.getNodeType()) {
 				continue;
+			}
 
 			checkNode(a, "arg", "annotation");
 
-			if ("annotation".equals(a.getNodeName()))
+			if ("annotation".equals(a.getNodeName())) {
 				annotations += parseAnnotation((Element) a, imports, anns);
-			else {
+			} else {
 				Element arg = (Element) a;
 				String type = getJavaType(arg.getAttribute("type"), imports,
 						structs, false, false);
 				String name = arg.getAttribute("name");
-				if (null == name || "".equals(name))
+				if (null == name || "".equals(name)) {
 					name = "" + (defaultname++);
+				}
 				params.put(mangle(name), type);
 				porder.add(mangle(name));
 			}
@@ -274,18 +290,22 @@ public class CreateInterface
 		out += annotations;
 		out += "   public static class " + signal.getAttribute("name");
 		out += " extends DBusSignal\n   {\n";
-		for (String name : porder)
+		for (String name : porder) {
 			out += "      public final " + params.get(name) + " " + name
 					+ ";\n";
+		}
 		out += "      public " + signal.getAttribute("name") + "(String path";
-		for (String name : porder)
+		for (String name : porder) {
 			out += ", " + params.get(name) + " " + name;
+		}
 		out += ") throws DBusException\n      {\n         super(path";
-		for (String name : porder)
+		for (String name : porder) {
 			out += ", " + name;
+		}
 		out += ");\n";
-		for (String name : porder)
+		for (String name : porder) {
 			out += "         this." + name + " = " + name + ";\n";
+		}
 		out += "      }\n";
 
 		out += "   }\n";
@@ -299,8 +319,9 @@ public class CreateInterface
 				+ ann.getAttribute("name").replaceAll(".*\\.([^.]*)$", "$1")
 				+ "(";
 		if (null != ann.getAttribute("value")
-				&& !"".equals(ann.getAttribute("value")))
+				&& !"".equals(ann.getAttribute("value"))) {
 			s += '"' + ann.getAttribute("value") + '"';
+		}
 		imports.add(ann.getAttribute("name"));
 		annotations.add(ann.getAttribute("name"));
 		return s += ")\n";
@@ -326,25 +347,29 @@ public class CreateInterface
 		imports.add("org.freedesktop.dbus.DBusInterface");
 		for (Node meth : new IterableNodeList(iface.getChildNodes())) {
 
-			if (Node.ELEMENT_NODE != meth.getNodeType())
+			if (Node.ELEMENT_NODE != meth.getNodeType()) {
 				continue;
+			}
 
 			checkNode(meth, "method", "signal", "property", "annotation");
 
-			if ("method".equals(meth.getNodeName()))
+			if ("method".equals(meth.getNodeName())) {
 				methods += parseMethod((Element) meth, imports, tuples, structs,
 						exceptions, anns) + "\n";
-			else if ("signal".equals(meth.getNodeName()))
+			} else if ("signal".equals(meth.getNodeName())) {
 				signals += parseSignal((Element) meth, imports, structs, anns);
-			else if ("property".equals(meth.getNodeName()))
+			} else if ("property".equals(meth.getNodeName())) {
 				System.err.println("WARNING: Ignoring property");
-			else if ("annotation".equals(meth.getNodeName()))
+			} else if ("annotation".equals(meth.getNodeName())) {
 				annotations += parseAnnotation((Element) meth, imports, anns);
+			}
 		}
 
-		if (imports.size() > 0)
-			for (String i : imports)
+		if (imports.size() > 0) {
+			for (String i : imports) {
 				out.println("import " + i + ";");
+			}
+		}
 
 		out.print(annotations);
 		out.print("public interface " + iface.getAttribute("name")
@@ -396,11 +421,13 @@ public class CreateInterface
 		Map<StructStruct, Type[]> structs = new HashMap<StructStruct, Type[]>(
 				existing);
 		String[] types = new String[type.length];
-		for (int i = 0; i < type.length; i++)
+		for (int i = 0; i < type.length; i++) {
 			types[i] = collapseType(type[i], imports, structs, false, false);
+		}
 
-		for (String im : imports)
+		for (String im : imports) {
 			out.println("import " + im + ";");
+		}
 
 		out.println("public final class " + name + " extends Struct");
 		out.println("{");
@@ -416,8 +443,9 @@ public class CreateInterface
 		out.println(
 				"  public " + name + "(" + params.replaceAll("..$", "") + ")");
 		out.println("  {");
-		for (char d = 'a'; d < c; d++)
+		for (char d = 'a'; d < c; d++) {
 			out.println("   this." + d + " = " + d + ";");
+		}
 
 		out.println("  }");
 		out.println("}");
@@ -425,8 +453,9 @@ public class CreateInterface
 		structs = StructStruct.fillPackages(structs, pack);
 		Map<StructStruct, Type[]> tocreate = new HashMap<StructStruct, Type[]>(
 				structs);
-		for (StructStruct ss : existing.keySet())
+		for (StructStruct ss : existing.keySet()) {
 			tocreate.remove(ss);
+		}
 		createStructs(tocreate, structs);
 	}
 
@@ -439,8 +468,9 @@ public class CreateInterface
 		out.println("/** Just a typed container class */");
 		out.print("public final class " + name);
 		String types = " <";
-		for (char v = 'A'; v < 'A' + num; v++)
+		for (char v = 'A'; v < 'A' + num; v++) {
 			types += v + ",";
+		}
 		out.print(types.replaceAll(",$", "> "));
 		out.println("extends Tuple");
 		out.println("{");
@@ -456,12 +486,14 @@ public class CreateInterface
 		String sig = "";
 		t = 'A';
 		n = 'a';
-		for (int i = 0; i < num; i++, t++, n++)
+		for (int i = 0; i < num; i++, t++, n++) {
 			sig += t + " " + n + ", ";
+		}
 		out.println(sig.replaceAll(", $", ")"));
 		out.println("   {");
-		for (char v = 'a'; v < 'a' + num; v++)
+		for (char v = 'a'; v < 'a' + num; v++) {
 			out.println("      this." + v + " = " + v + ";");
+		}
 		out.println("   }");
 
 		out.println("}");
@@ -475,8 +507,9 @@ public class CreateInterface
 
 		for (Node iface : new IterableNodeList(root.getChildNodes())) {
 
-			if (Node.ELEMENT_NODE != iface.getNodeType())
+			if (Node.ELEMENT_NODE != iface.getNodeType()) {
 				continue;
+			}
 
 			checkNode(iface, "interface", "node");
 
@@ -489,8 +522,9 @@ public class CreateInterface
 				String pack = name.replaceAll("\\.[^.]*$", "");
 
 				// don't create interfaces in org.freedesktop.DBus by default
-				if (pack.startsWith("org.freedesktop.DBus") && !builtin)
+				if (pack.startsWith("org.freedesktop.DBus") && !builtin) {
 					continue;
+				}
 
 				factory.init(file, path);
 				parseInterface((Element) iface, factory.createPrintStream(file),
@@ -498,9 +532,9 @@ public class CreateInterface
 
 				structs = StructStruct.fillPackages(structs, pack);
 				createTuples(tuples, pack);
-			} else if ("node".equals(iface.getNodeName()))
+			} else if ("node".equals(iface.getNodeName())) {
 				parseRoot((Element) iface);
-			else {
+			} else {
 				System.err.println(
 						_("ERROR: Unknown node: ") + iface.getNodeName());
 				System.exit(1);
@@ -519,8 +553,9 @@ public class CreateInterface
 			String name = fqn.replaceAll("^.*\\.([^.]*)$", "$1");
 			String pack = fqn.replaceAll("\\.[^.]*$", "");
 			// don't create things in org.freedesktop.DBus by default
-			if (pack.startsWith("org.freedesktop.DBus") && !builtin)
+			if (pack.startsWith("org.freedesktop.DBus") && !builtin) {
 				continue;
+			}
 			String path = pack.replaceAll("\\.", "/");
 			String file = name.replaceAll("\\.", "/") + ".java";
 			factory.init(file, path);
@@ -535,8 +570,9 @@ public class CreateInterface
 			String name = fqn.replaceAll("^.*\\.([^.]*)$", "$1");
 			String pack = fqn.replaceAll("\\.[^.]*$", "");
 			// don't create things in org.freedesktop.DBus by default
-			if (pack.startsWith("org.freedesktop.DBus") && !builtin)
+			if (pack.startsWith("org.freedesktop.DBus") && !builtin) {
 				continue;
+			}
 			String path = pack.replaceAll("\\.", "/");
 			String file = name.replaceAll("\\.", "/") + ".java";
 			factory.init(file, path);
@@ -560,9 +596,10 @@ public class CreateInterface
 	private void createTuples(Map<String, Integer> typeMap, String pack)
 			throws DBusException, IOException
 	{
-		for (String tname : typeMap.keySet())
+		for (String tname : typeMap.keySet()) {
 			createTuple(tname, typeMap.get(tname), pack, factory
 					.createPrintStream(pack.replaceAll("\\.", "/"), tname));
+		}
 	}
 
 	public static abstract class PrintStreamFactory
@@ -608,6 +645,7 @@ public class CreateInterface
 			return System.out;
 		}
 
+		@Override
 		public PrintStream createPrintStream(String path, String tname)
 				throws IOException
 		{
@@ -618,6 +656,7 @@ public class CreateInterface
 
 	static class FileStreamFactory extends PrintStreamFactory
 	{
+		@Override
 		public void init(String file, String path)
 		{
 			new File(path).mkdirs();
@@ -628,6 +667,7 @@ public class CreateInterface
 		 * @return
 		 * @throws IOException
 		 */
+		@Override
 		public PrintStream createPrintStream(final String file)
 				throws IOException
 		{
@@ -640,8 +680,9 @@ public class CreateInterface
 	{
 		String expected = "";
 		for (String name : names) {
-			if (name.equals(n.getNodeName()))
+			if (name.equals(n.getNodeName())) {
 				return;
+			}
 			expected += name + " or ";
 		}
 		System.err.println(MessageFormat.format(
@@ -686,17 +727,17 @@ public class CreateInterface
 	{
 		Config config = new Config();
 		for (String p : args) {
-			if ("--system".equals(p) || "-y".equals(p))
+			if ("--system".equals(p) || "-y".equals(p)) {
 				config.bus = DBusConnection.SYSTEM;
-			else if ("--session".equals(p) || "-s".equals(p))
+			} else if ("--session".equals(p) || "-s".equals(p)) {
 				config.bus = DBusConnection.SESSION;
-			else if ("--no-ignore-builtin".equals(p))
+			} else if ("--no-ignore-builtin".equals(p)) {
 				config.builtin = true;
-			else if ("--create-files".equals(p) || "-f".equals(p))
+			} else if ("--create-files".equals(p) || "-f".equals(p)) {
 				config.fileout = true;
-			else if ("--print-tree".equals(p) || "-p".equals(p))
+			} else if ("--print-tree".equals(p) || "-p".equals(p)) {
 				config.printtree = true;
-			else if ("--help".equals(p) || "-h".equals(p)) {
+			} else if ("--help".equals(p) || "-h".equals(p)) {
 				printSyntax(System.out);
 				System.exit(0);
 			} else if ("--version".equals(p) || "-v".equals(p)) {
@@ -707,11 +748,11 @@ public class CreateInterface
 				printSyntax();
 				System.exit(1);
 			} else {
-				if (null == config.busname)
+				if (null == config.busname) {
 					config.busname = p;
-				else if (null == config.object)
+				} else if (null == config.object) {
 					config.object = p;
-				else {
+				} else {
 					printSyntax();
 					System.exit(1);
 				}
@@ -733,7 +774,7 @@ public class CreateInterface
 
 		Reader introspectdata = null;
 
-		if (null != config.busname)
+		if (null != config.busname) {
 			try {
 				DBusConnection conn = DBusConnection.getConnection(config.bus);
 				Introspectable in = conn.getRemoteObject(config.busname,
@@ -756,7 +797,7 @@ public class CreateInterface
 				System.exit(1);
 
 			}
-		else if (null != config.datafile)
+		} else if (null != config.datafile) {
 			try {
 				introspectdata = new InputStreamReader(
 						new FileInputStream(config.datafile));
@@ -766,6 +807,7 @@ public class CreateInterface
 								+ FNFe.getMessage());
 				System.exit(1);
 			}
+		}
 		try {
 			PrintStreamFactory factory = config.fileout
 					? new FileStreamFactory() : new ConsoleStreamFactory();

@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
@@ -43,18 +43,17 @@ public class CrossTestClient implements DBus.Binding.TestClient,
 		DBusSigHandler<DBus.Binding.TestSignals.Triggered>
 {
 
-	final static Logger logger = LoggerFactory
-			.getLogger(CrossTestClient.class);
+	final static Logger logger = LoggerFactory.getLogger(CrossTestClient.class);
 
 	private DBusConnection conn;
 	private static Set<String> passed = new TreeSet<String>();
 	private static Map<String, List<String>> failed = new HashMap<String, List<String>>();
 	private static CrossTestClient ctc;
 	static {
-		List<String> l = new Vector<String>();
+		List<String> l = new ArrayList<String>();
 		l.add("Signal never arrived");
 		failed.put("org.freedesktop.DBus.Binding.TestSignals.Triggered", l);
-		l = new Vector<String>();
+		l = new ArrayList<String>();
 		l.add("Method never called");
 		failed.put("org.freedesktop.DBus.Binding.TestClient.Response", l);
 	}
@@ -111,7 +110,7 @@ public class CrossTestClient implements DBus.Binding.TestClient,
 		test = test.replaceAll("[$]", ".");
 		List<String> reasons = failed.get(test);
 		if (null == reasons) {
-			reasons = new Vector<String>();
+			reasons = new ArrayList<String>();
 			failed.put(test, reasons);
 		}
 		reasons.add(reason);
@@ -252,7 +251,7 @@ public class CrossTestClient implements DBus.Binding.TestClient,
 	@SuppressWarnings("unchecked")
 	public static List<Variant<Object>> PrimitizeRecurse(Object a, Type t)
 	{
-		List<Variant<Object>> vs = new Vector<Variant<Object>>();
+		List<Variant<Object>> vs = new ArrayList<Variant<Object>>();
 		if (t instanceof ParameterizedType) {
 			Class<Object> c = (Class<Object>) ((ParameterizedType) t)
 					.getRawType();
@@ -566,14 +565,14 @@ public class CrossTestClient implements DBus.Binding.TestClient,
 		in.put("to", "there");
 		in.put("from", "here");
 		in.put("in", "out");
-		List<String> l = new Vector<String>();
+		List<String> l = new ArrayList<String>();
 		l.add("hi");
 		l.add("to");
 		out.put("there", l);
-		l = new Vector<String>();
+		l = new ArrayList<String>();
 		l.add("from");
 		out.put("here", l);
-		l = new Vector<String>();
+		l = new ArrayList<String>();
 		l.add("in");
 		out.put("out", l);
 		test(DBus.Binding.Tests.class, tests, "InvertMapping", out, in);

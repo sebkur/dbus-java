@@ -12,8 +12,9 @@ package org.freedesktop.dbus.bin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 import org.freedesktop.dbus.BusAddress;
 import org.freedesktop.dbus.Error;
@@ -50,7 +51,7 @@ public class Caller
 				m = new MethodCall(args[0], args[1], args[2], args[3], (byte) 0,
 						null);
 			} else {
-				Vector<Type> lts = new Vector<Type>();
+				List<Type> lts = new ArrayList<Type>();
 				Marshalling.getJavaType(args[4], lts, -1);
 				Type[] ts = lts.toArray(new Type[0]);
 				Object[] os = new Object[args.length - 5];

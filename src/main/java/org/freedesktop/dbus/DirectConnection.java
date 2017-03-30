@@ -18,8 +18,9 @@ import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -127,7 +128,7 @@ public class DirectConnection extends AbstractConnection
 					path, DBus.Introspectable.class);
 			String data = intro.Introspect();
 			String[] tags = data.split("[<>]");
-			Vector<String> ifaces = new Vector<String>();
+			List<String> ifaces = new ArrayList<String>();
 			for (String tag : tags) {
 				if (tag.startsWith("interface")) {
 					ifaces.add(tag.replaceAll(
@@ -135,7 +136,7 @@ public class DirectConnection extends AbstractConnection
 							"$1"));
 				}
 			}
-			Vector<Class<? extends Object>> ifcs = new Vector<Class<? extends Object>>();
+			List<Class<? extends Object>> ifcs = new ArrayList<Class<? extends Object>>();
 			for (String iface : ifaces) {
 				int j = 0;
 				while (j >= 0) {
@@ -288,7 +289,7 @@ public class DirectConnection extends AbstractConnection
 		SignalTuple key = new SignalTuple(rule.getInterface(), rule.getMember(),
 				rule.getObject(), rule.getSource());
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> v = handledSignals
+			List<DBusSigHandler<? extends DBusSignal>> v = handledSignals
 					.get(key);
 			if (null != v) {
 				v.remove(handler);
@@ -306,10 +307,10 @@ public class DirectConnection extends AbstractConnection
 		SignalTuple key = new SignalTuple(rule.getInterface(), rule.getMember(),
 				rule.getObject(), rule.getSource());
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> v = handledSignals
+			List<DBusSigHandler<? extends DBusSignal>> v = handledSignals
 					.get(key);
 			if (null == v) {
-				v = new Vector<DBusSigHandler<? extends DBusSignal>>();
+				v = new ArrayList<DBusSigHandler<? extends DBusSignal>>();
 				v.add(handler);
 				handledSignals.put(key, v);
 			} else {

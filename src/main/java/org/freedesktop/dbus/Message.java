@@ -16,11 +16,11 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.MarshallingException;
@@ -254,7 +254,7 @@ public class Message
 		logger.trace(headers.toString());
 		Object[] hs = extract("a(yv)", headers, 0);
 		logger.trace(Arrays.deepToString(hs));
-		for (Object o : (Vector<Object>) hs[0]) {
+		for (Object o : (List<Object>) hs[0]) {
 			this.headers.put((Byte) ((Object[]) o)[0],
 					((Variant<Object>) ((Object[]) o)[1]).getValue());
 		}
@@ -785,7 +785,7 @@ public class Message
 					}
 					if (i == diff) {
 						// advance the type parser even on 0-size arrays.
-						Vector<Type> temp = new Vector<Type>();
+						List<Type> temp = new ArrayList<Type>();
 						byte[] temp2 = new byte[sigb.length - diff];
 						System.arraycopy(sigb, diff, temp2, 0, temp2.length);
 						String temp3 = new String(temp2);
@@ -1107,7 +1107,7 @@ public class Message
 			case ArgumentType.DICT_ENTRY1:
 				if (0 == size) {
 					// advance the type parser even on 0-size arrays.
-					Vector<Type> temp = new Vector<Type>();
+					List<Type> temp = new ArrayList<Type>();
 					byte[] temp2 = new byte[sigb.length - ofs[0]];
 					System.arraycopy(sigb, ofs[0], temp2, 0, temp2.length);
 					String temp3 = new String(temp2);
@@ -1120,7 +1120,7 @@ public class Message
 				}
 				int ofssave = ofs[0];
 				long end = ofs[1] + size;
-				Vector<Object[]> entries = new Vector<Object[]>();
+				List<Object[]> entries = new ArrayList<Object[]>();
 				while (ofs[1] < end) {
 					ofs[0] = ofssave;
 					entries.add((Object[]) extractone(sigb, buf, ofs, true));
@@ -1131,7 +1131,7 @@ public class Message
 			default:
 				if (0 == size) {
 					// advance the type parser even on 0-size arrays.
-					Vector<Type> temp = new Vector<Type>();
+					List<Type> temp = new ArrayList<Type>();
 					byte[] temp2 = new byte[sigb.length - ofs[0]];
 					System.arraycopy(sigb, ofs[0], temp2, 0, temp2.length);
 					String temp3 = new String(temp2);
@@ -1144,7 +1144,7 @@ public class Message
 				}
 				ofssave = ofs[0];
 				end = ofs[1] + size;
-				Vector<Object> contents = new Vector<Object>();
+				List<Object> contents = new ArrayList<Object>();
 				while (ofs[1] < end) {
 					ofs[0] = ofssave;
 					contents.add(extractone(sigb, buf, ofs, true));
@@ -1156,7 +1156,7 @@ public class Message
 			}
 			break;
 		case ArgumentType.STRUCT1:
-			Vector<Object> contents = new Vector<Object>();
+			List<Object> contents = new ArrayList<Object>();
 			while (sigb[++ofs[0]] != ArgumentType.STRUCT2) {
 				contents.add(extractone(sigb, buf, ofs, true));
 			}
@@ -1259,7 +1259,7 @@ public class Message
 	{
 		logger.trace("extract(" + sig + ",#" + buf.length + ", {" + ofs[0] + ","
 				+ ofs[1] + "}");
-		Vector<Object> rv = new Vector<Object>();
+		List<Object> rv = new ArrayList<Object>();
 		byte[] sigb = sig.getBytes();
 		for (int[] i = ofs; i[0] < sigb.length; i[0]++) {
 			rv.add(extractone(sigb, buf, i, false));

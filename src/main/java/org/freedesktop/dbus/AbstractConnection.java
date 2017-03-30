@@ -18,11 +18,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.freedesktop.DBus;
@@ -298,7 +299,7 @@ public abstract class AbstractConnection
 	private ObjectTree objectTree;
 	private _globalhandler _globalhandlerreference;
 	protected Map<DBusInterface, RemoteObject> importedObjects;
-	protected Map<SignalTuple, Vector<DBusSigHandler<? extends DBusSignal>>> handledSignals;
+	protected Map<SignalTuple, List<DBusSigHandler<? extends DBusSignal>>> handledSignals;
 	protected EfficientMap pendingCalls;
 	protected Map<MethodCall, CallbackHandler<? extends Object>> pendingCallbacks;
 	protected Map<MethodCall, DBusAsyncReply<? extends Object>> pendingCallbackReplys;
@@ -335,7 +336,7 @@ public abstract class AbstractConnection
 			exportedObjects.put(null, new ExportedObject(
 					_globalhandlerreference, weakreferences));
 		}
-		handledSignals = new HashMap<SignalTuple, Vector<DBusSigHandler<? extends DBusSignal>>>();
+		handledSignals = new HashMap<SignalTuple, List<DBusSigHandler<? extends DBusSignal>>>();
 		pendingCalls = new EfficientMap(PENDING_MAP_INITIAL_SIZE);
 		outgoing = new EfficientQueue(PENDING_MAP_INITIAL_SIZE);
 		pendingCallbacks = new HashMap<MethodCall, CallbackHandler<? extends Object>>();
@@ -698,10 +699,10 @@ public abstract class AbstractConnection
 		SignalTuple key = new SignalTuple(rule.getInterface(), rule.getMember(),
 				rule.getObject(), rule.getSource());
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> v = handledSignals
+			List<DBusSigHandler<? extends DBusSignal>> v = handledSignals
 					.get(key);
 			if (null == v) {
-				v = new Vector<DBusSigHandler<? extends DBusSignal>>();
+				v = new ArrayList<DBusSigHandler<? extends DBusSignal>>();
 				v.add(handler);
 				handledSignals.put(key, v);
 			} else {
@@ -1064,9 +1065,9 @@ public abstract class AbstractConnection
 	private void handleMessage(final DBusSignal s)
 	{
 		logger.debug("Handling incoming signal: " + s);
-		Vector<DBusSigHandler<? extends DBusSignal>> v = new Vector<DBusSigHandler<? extends DBusSignal>>();
+		List<DBusSigHandler<? extends DBusSignal>> v = new ArrayList<DBusSigHandler<? extends DBusSignal>>();
 		synchronized (handledSignals) {
-			Vector<DBusSigHandler<? extends DBusSignal>> t;
+			List<DBusSigHandler<? extends DBusSignal>> t;
 			t = handledSignals.get(
 					new SignalTuple(s.getInterface(), s.getName(), null, null));
 			if (null != t) {

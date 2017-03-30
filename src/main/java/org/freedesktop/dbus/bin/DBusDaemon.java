@@ -21,12 +21,12 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.AbstractConnection;
@@ -686,7 +686,7 @@ public class DBusDaemon extends Thread
 			"in");
 	private MagicMap<Message, WeakReference<Connstruct>> localqueue = new MagicMap<Message, WeakReference<Connstruct>>(
 			"local");
-	private List<Connstruct> sigrecips = new Vector<Connstruct>();
+	private List<Connstruct> sigrecips = new ArrayList<Connstruct>();
 	private boolean _run = true;
 	private int next_unique = 0;
 	private Object unique_lock = new Object();
@@ -750,7 +750,7 @@ public class DBusDaemon extends Thread
 		logger.debug("enter");
 		List<Connstruct> l;
 		synchronized (sigrecips) {
-			l = new Vector<Connstruct>(sigrecips);
+			l = new ArrayList<Connstruct>(sigrecips);
 		}
 		logger.debug("exit");
 		return l;
@@ -875,7 +875,7 @@ public class DBusDaemon extends Thread
 			} catch (IOException IOe) {
 			}
 			synchronized (names) {
-				List<String> toRemove = new Vector<String>();
+				List<String> toRemove = new ArrayList<String>();
 				for (String name : names.keySet()) {
 					if (names.get(name) == c) {
 						toRemove.add(name);

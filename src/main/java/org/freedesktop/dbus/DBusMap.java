@@ -10,13 +10,13 @@
 */
 package org.freedesktop.dbus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 class DBusMap<K, V> implements Map<K, V>
 {
@@ -36,147 +36,183 @@ class DBusMap<K, V> implements Map<K, V>
 			this.entry = i;
 		}
 
+		@Override
 		public boolean equals(Object o)
 		{
-			if (null == o)
+			if (null == o) {
 				return false;
-			if (!(o instanceof DBusMap.Entry))
+			}
+			if (!(o instanceof DBusMap.Entry)) {
 				return false;
+			}
 			return this.entry == ((Entry) o).entry;
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public K getKey()
 		{
 			return (K) entries[entry][0];
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public V getValue()
 		{
 			return (V) entries[entry][1];
 		}
 
+		@Override
 		public int hashCode()
 		{
 			return entries[entry][0].hashCode();
 		}
 
+		@Override
 		public V setValue(V value)
 		{
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int compareTo(Entry e)
 		{
 			return entry - e.entry;
 		}
 	}
 
+	@Override
 	public void clear()
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public boolean containsKey(Object key)
 	{
-		for (int i = 0; i < entries.length; i++)
+		for (int i = 0; i < entries.length; i++) {
 			if (key == entries[i][0]
-					|| (key != null && key.equals(entries[i][0])))
+					|| (key != null && key.equals(entries[i][0]))) {
 				return true;
+			}
+		}
 		return false;
 	}
 
+	@Override
 	public boolean containsValue(Object value)
 	{
-		for (int i = 0; i < entries.length; i++)
+		for (int i = 0; i < entries.length; i++) {
 			if (value == entries[i][1]
-					|| (value != null && value.equals(entries[i][1])))
+					|| (value != null && value.equals(entries[i][1]))) {
 				return true;
+			}
+		}
 		return false;
 	}
 
+	@Override
 	public Set<Map.Entry<K, V>> entrySet()
 	{
 		Set<Map.Entry<K, V>> s = new TreeSet<Map.Entry<K, V>>();
-		for (int i = 0; i < entries.length; i++)
+		for (int i = 0; i < entries.length; i++) {
 			s.add(new Entry(i));
+		}
 		return s;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public V get(Object key)
 	{
-		for (int i = 0; i < entries.length; i++)
+		for (int i = 0; i < entries.length; i++) {
 			if (key == entries[i][0]
-					|| (key != null && key.equals(entries[i][0])))
+					|| (key != null && key.equals(entries[i][0]))) {
 				return (V) entries[i][1];
+			}
+		}
 		return null;
 	}
 
+	@Override
 	public boolean isEmpty()
 	{
 		return entries.length == 0;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<K> keySet()
 	{
 		Set<K> s = new TreeSet<K>();
-		for (Object[] entry : entries)
+		for (Object[] entry : entries) {
 			s.add((K) entry[0]);
+		}
 		return s;
 	}
 
+	@Override
 	public V put(K key, V value)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void putAll(Map<? extends K, ? extends V> t)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public V remove(Object key)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public int size()
 	{
 		return entries.length;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<V> values()
 	{
-		List<V> l = new Vector<V>();
-		for (Object[] entry : entries)
+		List<V> l = new ArrayList<V>();
+		for (Object[] entry : entries) {
 			l.add((V) entry[1]);
+		}
 		return l;
 	}
 
+	@Override
 	public int hashCode()
 	{
 		return Arrays.deepHashCode(entries);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean equals(Object o)
 	{
-		if (null == o)
+		if (null == o) {
 			return false;
-		if (!(o instanceof Map))
+		}
+		if (!(o instanceof Map)) {
 			return false;
+		}
 		return ((Map<K, V>) o).entrySet().equals(entrySet());
 	}
 
+	@Override
 	public String toString()
 	{
 		String s = "{ ";
-		for (int i = 0; i < entries.length; i++)
+		for (int i = 0; i < entries.length; i++) {
 			s += entries[i][0] + " => " + entries[i][1] + ",";
+		}
 		return s.replaceAll(".$", " }");
 	}
+
 }

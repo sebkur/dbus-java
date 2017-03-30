@@ -12,7 +12,8 @@ package org.freedesktop.dbus;
 
 import static org.freedesktop.dbus.Gettext._;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.MessageFormatException;
@@ -49,7 +50,7 @@ public class MethodCall extends Message
 		headers.put(Message.HeaderField.PATH, path);
 		headers.put(Message.HeaderField.MEMBER, member);
 
-		Vector<Object> hargs = new Vector<Object>();
+		List<Object> hargs = new ArrayList<Object>();
 
 		hargs.add(new Object[] { Message.HeaderField.PATH,
 				new Object[] { ArgumentType.OBJECT_PATH_STRING, path } });

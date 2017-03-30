@@ -10,7 +10,9 @@
 */
 package org.freedesktop.dbus;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class MethodReturn extends Message
@@ -32,7 +34,7 @@ public class MethodReturn extends Message
 
 		headers.put(Message.HeaderField.REPLY_SERIAL, replyserial);
 
-		Vector<Object> hargs = new Vector<Object>();
+		List<Object> hargs = new ArrayList<Object>();
 		hargs.add(new Object[] { Message.HeaderField.REPLY_SERIAL,
 				new Object[] { ArgumentType.UINT32_STRING, replyserial } });
 
@@ -61,8 +63,9 @@ public class MethodReturn extends Message
 		pad((byte) 8);
 
 		long c = bytecounter;
-		if (null != sig)
+		if (null != sig) {
 			append(sig, args);
+		}
 		marshallint(bytecounter - c, blen, 0, 4);
 	}
 

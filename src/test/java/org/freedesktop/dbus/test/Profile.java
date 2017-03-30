@@ -10,12 +10,13 @@
 */
 package org.freedesktop.dbus.test;
 
-import java.util.Random;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
+import java.util.Random;
 
-import org.freedesktop.DBus.Peer;
 import org.freedesktop.DBus.Introspectable;
+import org.freedesktop.DBus.Peer;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt32;
@@ -24,10 +25,12 @@ class ProfileHandler implements DBusSigHandler<Profiler.ProfileSignal>
 {
 	public int c = 0;
 
+	@Override
 	public void handle(Profiler.ProfileSignal s)
 	{
-		if (0 == (c++ % Profile.SIGNAL_INNER))
+		if (0 == (c++ % Profile.SIGNAL_INNER)) {
 			System.out.print("-");
+		}
 	}
 }
 
@@ -82,29 +85,35 @@ public class Profile
 
 		public double mean()
 		{
-			if (0 == current)
+			if (0 == current) {
 				return 0;
+			}
 			long sum = 0;
-			for (int i = 0; i < current; i++)
+			for (int i = 0; i < current; i++) {
 				sum += deltas[i];
+			}
 			return sum /= current;
 		}
 
 		public long min()
 		{
 			int m = Integer.MAX_VALUE;
-			for (int i = 0; i < current; i++)
-				if (deltas[i] < m)
+			for (int i = 0; i < current; i++) {
+				if (deltas[i] < m) {
 					m = deltas[i];
+				}
+			}
 			return m;
 		}
 
 		public long max()
 		{
 			int m = 0;
-			for (int i = 0; i < current; i++)
-				if (deltas[i] > m)
+			for (int i = 0; i < current; i++) {
+				if (deltas[i] > m) {
 					m = deltas[i];
+				}
+			}
 			return m;
 		}
 
@@ -112,8 +121,9 @@ public class Profile
 		{
 			double mean = mean();
 			double sum = 0;
-			for (int i = 0; i < current; i++)
+			for (int i = 0; i < current; i++) {
 				sum += (deltas[i] - mean) * (deltas[i] - mean);
+			}
 			return Math.sqrt(sum / (current - 1));
 		}
 	}
@@ -163,8 +173,9 @@ public class Profile
 						Profiler.class);
 				String[] v = new String[STRING_ARRAY_LENGTH];
 				Random r = new Random();
-				for (int i = 0; i < STRING_ARRAY_LENGTH; i++)
+				for (int i = 0; i < STRING_ARRAY_LENGTH; i++) {
 					v[i] = "" + r.nextInt();
+				}
 				Log l = new Log(count);
 				long t = System.currentTimeMillis();
 				for (int i = 0; i < STRING_ARRAY_OUTER; i++) {
@@ -192,8 +203,9 @@ public class Profile
 						Profiler.class);
 				int[] v = new int[ARRAY_LENGTH];
 				Random r = new Random();
-				for (int i = 0; i < ARRAY_LENGTH; i++)
+				for (int i = 0; i < ARRAY_LENGTH; i++) {
 					v[i] = r.nextInt();
+				}
 				Log l = new Log(count);
 				long t = System.currentTimeMillis();
 				for (int i = 0; i < ARRAY_OUTER; i++) {
@@ -220,8 +232,9 @@ public class Profile
 						"org.freedesktop.DBus.java.profiler", "/Profiler",
 						Profiler.class);
 				HashMap<String, String> m = new HashMap<String, String>();
-				for (int i = 0; i < MAP_LENGTH; i++)
+				for (int i = 0; i < MAP_LENGTH; i++) {
 					m.put("" + i, "hello");
+				}
 				Log l = new Log(count);
 				long t = System.currentTimeMillis();
 				for (int i = 0; i < MAP_OUTER; i++) {
@@ -247,9 +260,10 @@ public class Profile
 				Profiler p = conn.getRemoteObject(
 						"org.freedesktop.DBus.java.profiler", "/Profiler",
 						Profiler.class);
-				Vector<String> v = new Vector<String>();
-				for (int i = 0; i < LIST_LENGTH; i++)
+				List<String> v = new ArrayList<String>();
+				for (int i = 0; i < LIST_LENGTH; i++) {
 					v.add("hello " + i);
+				}
 				Log l = new Log(count);
 				long t = System.currentTimeMillis();
 				for (int i = 0; i < LIST_OUTER; i++) {
@@ -327,8 +341,9 @@ public class Profile
 						"org.freedesktop.DBus.java.profiler", "/Profiler",
 						Profiler.class);
 				byte[] bs = new byte[BYTES];
-				for (int i = 0; i < BYTES; i++)
+				for (int i = 0; i < BYTES; i++) {
 					bs[i] = (byte) i;
+				}
 				long t = System.currentTimeMillis();
 				p.bytes(bs);
 				System.out.println(
@@ -385,8 +400,9 @@ public class Profile
 				len = 256;
 				while (len <= 32768) {
 					StringBuilder sb = new StringBuilder();
-					for (int i = 0; i < len; i++)
+					for (int i = 0; i < len; i++) {
 						sb.append('a');
+					}
 					String s = sb.toString();
 					end = System.currentTimeMillis() + 500;
 					count = 0;
@@ -425,11 +441,12 @@ public class Profile
 						+ l.max() + "/" + l.mean());
 				System.out.println("deviation: " + l.stddev());
 				System.out.println("Total time: " + t + "ms");
-				while (ph.c < count)
+				while (ph.c < count) {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException Ie) {
 					}
+				}
 				;
 			} else {
 				conn.disconnect();

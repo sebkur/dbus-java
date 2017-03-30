@@ -29,9 +29,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +203,7 @@ public class Transport
 			}
 
 			// read old file
-			Vector<String> lines = new Vector<String>();
+			List<String> lines = new ArrayList<String>();
 			if (cookiefile.exists()) {
 				BufferedReader r = new BufferedReader(
 						new InputStreamReader(new FileInputStream(cookiefile)));
