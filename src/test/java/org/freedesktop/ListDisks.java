@@ -16,30 +16,31 @@ public class ListDisks
 
 		DBusConnection conn = DBusConnection.getConnection(connection);
 
-		UDisks disks = conn.getRemoteObject("org.freedesktop.UDisks",
-				"/org/freedesktop/UDisks", UDisks.class);
+		String idDisks = "org.freedesktop.UDisks";
+		String idDevices = "org.freedesktop.UDisks.Device";
+
+		UDisks disks = conn.getRemoteObject(idDisks, "/org/freedesktop/UDisks",
+				UDisks.class);
 
 		Path[] paths = disks.EnumerateDevices();
+
 		for (Path path : paths) {
-			UDisks.Device disk = conn.getRemoteObject("org.freedesktop.UDisks",
-					path.getPath(), UDisks.Device.class);
+			UDisks.Device disk = conn.getRemoteObject(idDisks, path.getPath(),
+					UDisks.Device.class);
 
-			DBus.Properties diskProps = conn.getRemoteObject(
-					"org.freedesktop.UDisks", path.getPath(),
-					DBus.Properties.class);
-			Vector<String> mountPaths = diskProps
-					.Get("org.freedesktop.UDisks.Device", "DeviceMountPaths");
+			DBus.Properties diskProps = conn.getRemoteObject(idDisks,
+					path.getPath(), DBus.Properties.class);
+			Vector<String> mountPaths = diskProps.Get(idDevices,
+					"DeviceMountPaths");
 
-			UInt64 size = diskProps.Get("org.freedesktop.UDisks.Device",
-					"DeviceSize");
-			Boolean isPartitionTable = diskProps.Get(
-					"org.freedesktop.UDisks.Device", "DeviceIsPartitionTable");
-			Boolean isSystemInternal = diskProps.Get(
-					"org.freedesktop.UDisks.Device", "DeviceIsSystemInternal");
-			Boolean presentationHide = diskProps.Get(
-					"org.freedesktop.UDisks.Device", "DevicePresentationHide");
-			String partitionType = diskProps
-					.Get("org.freedesktop.UDisks.Device", "PartitionType");
+			UInt64 size = diskProps.Get(idDevices, "DeviceSize");
+			Boolean isPartitionTable = diskProps.Get(idDevices,
+					"DeviceIsPartitionTable");
+			Boolean isSystemInternal = diskProps.Get(idDevices,
+					"DeviceIsSystemInternal");
+			Boolean presentationHide = diskProps.Get(idDevices,
+					"DevicePresentationHide");
+			String partitionType = diskProps.Get(idDevices, "PartitionType");
 
 			boolean skip = isPartitionTable || partitionType.equals("0x05");
 			if (skip) {
