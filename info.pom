@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <name>Freedesktop.org Dbus</name>
+  <description>A library for connection to the Dbus daemon</description>
+  <url>https://dbus.freedesktop.org/doc/dbus-java/</url>
+</project>
