@@ -14,14 +14,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Vector;
-import java.io.File;
+
 import org.freedesktop.dbus.BusAddress;
 import org.freedesktop.dbus.Error;
 import org.freedesktop.dbus.Marshalling;
 import org.freedesktop.dbus.Message;
 import org.freedesktop.dbus.MethodCall;
 import org.freedesktop.dbus.Transport;
-import cx.ath.matthew.debug.Debug;
 
 public class Caller
 {
@@ -29,10 +28,6 @@ public class Caller
 	public static void main(String[] args)
 	{
 		try {
-			if (Debug.debug) {
-				Debug.setHexDump(true);
-				Debug.loadConfig(new File("debug.conf"));
-			}
 			if (args.length < 4) {
 				System.out.println(
 						"Syntax: Caller <dest> <path> <interface> <method> [<sig> <args>]");
@@ -48,12 +43,13 @@ public class Caller
 			;
 			conn.mout.writeMessage(m);
 
-			if ("".equals(args[2]))
+			if ("".equals(args[2])) {
 				args[2] = null;
-			if (args.length == 4)
+			}
+			if (args.length == 4) {
 				m = new MethodCall(args[0], args[1], args[2], args[3], (byte) 0,
 						null);
-			else {
+			} else {
 				Vector<Type> lts = new Vector<Type>();
 				Marshalling.getJavaType(args[4], lts, -1);
 				Type[] ts = lts.toArray(new Type[0]);
@@ -67,8 +63,9 @@ public class Caller
 						} catch (Exception e) {
 							os[i - 5] = args[i];
 						}
-					} else
+					} else {
 						os[i - 5] = args[i];
+					}
 				}
 				m = new MethodCall(args[0], args[1], args[2], args[3], (byte) 0,
 						args[4], os);
@@ -78,9 +75,9 @@ public class Caller
 			do {
 				m = conn.min.readMessage();
 			} while (serial != m.getReplySerial());
-			if (m instanceof Error)
+			if (m instanceof Error) {
 				((Error) m).throwException();
-			else {
+			} else {
 				Object[] os = m.getParameters();
 				System.out.println(Arrays.deepToString(os));
 			}

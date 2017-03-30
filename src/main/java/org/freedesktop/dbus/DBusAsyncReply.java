@@ -20,14 +20,17 @@ import java.util.Iterator;
 import org.freedesktop.DBus.Error.NoReply;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
-
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A handle to an asynchronous method call.
  */
 public class DBusAsyncReply<ReturnType>
 {
+
+	final static Logger logger = LoggerFactory.getLogger(DBusAsyncReply.class);
+
 	/**
 	 * Check if any of a set of asynchronous calls have had a reply.
 	 * 
@@ -41,9 +44,11 @@ public class DBusAsyncReply<ReturnType>
 		Collection<DBusAsyncReply<? extends Object>> c = new ArrayList<DBusAsyncReply<? extends Object>>(
 				replies);
 		Iterator<DBusAsyncReply<? extends Object>> i = c.iterator();
-		while (i.hasNext())
-			if (!i.next().hasReply())
+		while (i.hasNext()) {
+			if (!i.next().hasReply()) {
 				i.remove();
+			}
+		}
 		return c;
 	}
 
@@ -65,17 +70,18 @@ public class DBusAsyncReply<ReturnType>
 	{
 		if (mc.hasReply()) {
 			Message m = mc.getReply();
-			if (m instanceof Error)
+			if (m instanceof Error) {
 				error = ((Error) m).getException();
-			else if (m instanceof MethodReturn) {
+			} else if (m instanceof MethodReturn) {
 				try {
 					rval = (ReturnType) RemoteInvocationHandler
 							.convertRV(m.getSig(), m.getParameters(), me, conn);
 				} catch (DBusExecutionException DBEe) {
 					error = DBEe;
 				} catch (DBusException DBe) {
-					if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-						Debug.print(Debug.ERR, DBe);
+					if (AbstractConnection.EXCEPTION_DEBUG) {
+						logger.error("", DBe);
+					}
 					error = new DBusExecutionException(DBe.getMessage());
 				}
 			}
@@ -89,8 +95,9 @@ public class DBusAsyncReply<ReturnType>
 	 */
 	public boolean hasReply()
 	{
-		if (null != rval || null != error)
+		if (null != rval || null != error) {
 			return true;
+		}
 		checkReply();
 		return null != rval || null != error;
 	}
@@ -106,19 +113,22 @@ public class DBusAsyncReply<ReturnType>
 	 */
 	public ReturnType getReply() throws DBusExecutionException
 	{
-		if (null != rval)
+		if (null != rval) {
 			return rval;
-		else if (null != error)
+		} else if (null != error) {
 			throw error;
+		}
 		checkReply();
-		if (null != rval)
+		if (null != rval) {
 			return rval;
-		else if (null != error)
+		} else if (null != error) {
 			throw error;
-		else
+		} else {
 			throw new NoReply(_("Async call has not had a reply"));
+		}
 	}
 
+	@Override
 	public String toString()
 	{
 		return _("Waiting for: ") + mc;

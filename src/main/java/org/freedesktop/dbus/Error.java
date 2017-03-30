@@ -14,18 +14,22 @@ import static org.freedesktop.dbus.Gettext._;
 
 import java.lang.reflect.Constructor;
 import java.util.Vector;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.exceptions.MessageFormatException;
 import org.freedesktop.dbus.exceptions.NotConnected;
-
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Error messages which can be sent over the bus.
  */
 public class Error extends Message
 {
+
+	final static Logger logger = LoggerFactory.getLogger(Error.class);
+
 	Error()
 	{
 	}
@@ -41,9 +45,10 @@ public class Error extends Message
 	{
 		super(Message.Endian.BIG, Message.MessageType.ERROR, (byte) 0);
 
-		if (null == errorName)
+		if (null == errorName) {
 			throw new MessageFormatException(
 					_("Must specify error name to Errors."));
+		}
 		headers.put(Message.HeaderField.REPLY_SERIAL, replyserial);
 		headers.put(Message.HeaderField.ERROR_NAME, errorName);
 
@@ -78,8 +83,9 @@ public class Error extends Message
 		pad((byte) 8);
 
 		long c = bytecounter;
-		if (null != sig)
+		if (null != sig) {
 			append(sig, args);
+		}
 		marshallint(bytecounter - c, blen, 0, 4);
 	}
 
@@ -103,8 +109,9 @@ public class Error extends Message
 	private static Class<? extends DBusExecutionException> createExceptionClass(
 			String name)
 	{
-		if (name == "org.freedesktop.DBus.Local.Disconnected")
+		if (name == "org.freedesktop.DBus.Local.Disconnected") {
 			return NotConnected.class;
+		}
 		Class<? extends DBusExecutionException> c = null;
 		do {
 			try {
@@ -125,40 +132,45 @@ public class Error extends Message
 		try {
 			Class<? extends DBusExecutionException> c = createExceptionClass(
 					getName());
-			if (null == c || !DBusExecutionException.class.isAssignableFrom(c))
+			if (null == c
+					|| !DBusExecutionException.class.isAssignableFrom(c)) {
 				c = DBusExecutionException.class;
+			}
 			Constructor<? extends DBusExecutionException> con = c
 					.getConstructor(String.class);
 			DBusExecutionException ex;
 			Object[] args = getParameters();
-			if (null == args || 0 == args.length)
+			if (null == args || 0 == args.length) {
 				ex = con.newInstance("");
-			else {
+			} else {
 				String s = "";
-				for (Object o : args)
+				for (Object o : args) {
 					s += o + " ";
+				}
 				ex = con.newInstance(s.trim());
 			}
 			ex.setType(getName());
 			return ex;
 		} catch (Exception e) {
-			if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, e);
-			if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug
-					&& null != e.getCause())
-				Debug.print(Debug.ERR, e.getCause());
+			if (AbstractConnection.EXCEPTION_DEBUG) {
+				logger.error("", e);
+			}
+			if (AbstractConnection.EXCEPTION_DEBUG && null != e.getCause()) {
+				logger.error("", e.getCause());
+			}
 			DBusExecutionException ex;
 			Object[] args = null;
 			try {
 				args = getParameters();
 			} catch (Exception ee) {
 			}
-			if (null == args || 0 == args.length)
+			if (null == args || 0 == args.length) {
 				ex = new DBusExecutionException("");
-			else {
+			} else {
 				String s = "";
-				for (Object o : args)
+				for (Object o : args) {
 					s += o + " ";
+				}
 				ex = new DBusExecutionException(s.trim());
 			}
 			ex.setType(getName());

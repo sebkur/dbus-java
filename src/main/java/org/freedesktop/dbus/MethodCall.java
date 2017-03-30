@@ -13,13 +13,19 @@ package org.freedesktop.dbus;
 import static org.freedesktop.dbus.Gettext._;
 
 import java.util.Vector;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.MessageFormatException;
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cx.ath.matthew.utils.Hexdump;
 
 public class MethodCall extends Message
 {
+
+	final static Logger logger = LoggerFactory.getLogger(MethodCall.class);
+
 	MethodCall()
 	{
 	}
@@ -36,9 +42,10 @@ public class MethodCall extends Message
 	{
 		super(Message.Endian.BIG, Message.MessageType.METHOD_CALL, flags);
 
-		if (null == member || null == path)
+		if (null == member || null == path) {
 			throw new MessageFormatException(_(
 					"Must specify destination, path and function name to MethodCalls."));
+		}
 		headers.put(Message.HeaderField.PATH, path);
 		headers.put(Message.HeaderField.MEMBER, member);
 
@@ -69,9 +76,7 @@ public class MethodCall extends Message
 				new Object[] { ArgumentType.STRING_STRING, member } });
 
 		if (null != sig) {
-			if (Debug.debug)
-				Debug.print(Debug.DEBUG,
-						"Appending arguments with signature: " + sig);
+			logger.debug("Appending arguments with signature: " + sig);
 			hargs.add(new Object[] { Message.HeaderField.SIGNATURE,
 					new Object[] { ArgumentType.SIGNATURE_STRING, sig } });
 			headers.put(Message.HeaderField.SIGNATURE, sig);
@@ -84,16 +89,13 @@ public class MethodCall extends Message
 		pad((byte) 8);
 
 		long c = bytecounter;
-		if (null != sig)
+		if (null != sig) {
 			append(sig, args);
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG,
-					"Appended body, type: " + sig + " start: " + c + " end: "
-							+ bytecounter + " size: " + (bytecounter - c));
+		}
+		logger.debug("Appended body, type: " + sig + " start: " + c + " end: "
+				+ bytecounter + " size: " + (bytecounter - c));
 		marshallint(bytecounter - c, blen, 0, 4);
-		if (Debug.debug)
-			Debug.print(
-					"marshalled size (" + blen + "): " + Hexdump.format(blen));
+		logger.debug("marshalled size (" + blen + "): " + Hexdump.format(blen));
 	}
 
 	private static long REPLY_WAIT_TIMEOUT = 20000;
@@ -125,10 +127,10 @@ public class MethodCall extends Message
 	 */
 	public synchronized Message getReply(long timeout)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "Blocking on " + this);
-		if (null != reply)
+		logger.trace("Blocking on " + this);
+		if (null != reply) {
 			return reply;
+		}
 		try {
 			wait(timeout);
 			return reply;
@@ -145,10 +147,10 @@ public class MethodCall extends Message
 	 */
 	public synchronized Message getReply()
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "Blocking on " + this);
-		if (null != reply)
+		logger.trace("Blocking on " + this);
+		if (null != reply) {
 			return reply;
+		}
 		try {
 			wait(REPLY_WAIT_TIMEOUT);
 			return reply;
@@ -159,9 +161,7 @@ public class MethodCall extends Message
 
 	protected synchronized void setReply(Message reply)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE,
-					"Setting reply to " + this + " to " + reply);
+		logger.trace("Setting reply to " + this + " to " + reply);
 		this.reply = reply;
 		notifyAll();
 	}

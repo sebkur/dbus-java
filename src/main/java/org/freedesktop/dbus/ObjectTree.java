@@ -10,15 +10,19 @@
 */
 package org.freedesktop.dbus;
 
-import cx.ath.matthew.debug.Debug;
-
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Keeps track of the exported objects for introspection data
  */
 class ObjectTree
 {
+
+	final static Logger logger = LoggerFactory.getLogger(ObjectTree.class);
+
 	class TreeNode
 	{
 		String name;
@@ -51,8 +55,9 @@ class ObjectTree
 
 	private TreeNode recursiveFind(TreeNode current, String path)
 	{
-		if ("/".equals(path))
+		if ("/".equals(path)) {
 			return current;
+		}
 		String[] elements = path.split("/", 2);
 		// this is us or a parent node
 		if (path.startsWith(current.name)) {
@@ -62,10 +67,11 @@ class ObjectTree
 			}
 			// recurse down
 			else {
-				if (current.down == null)
+				if (current.down == null) {
 					return null;
-				else
+				} else {
 					return recursiveFind(current.down, elements[1]);
+				}
 			}
 		} else if (current.right == null) {
 			return null;
@@ -120,15 +126,13 @@ class ObjectTree
 
 	public void add(String path, ExportedObject object, String data)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Adding " + path + " to object tree");
+		logger.debug("Adding " + path + " to object tree");
 		root = recursiveAdd(root, path, object, data);
 	}
 
 	public void remove(String path)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Removing " + path + " from object tree");
+		logger.debug("Removing " + path + " from object tree");
 		TreeNode t = recursiveFind(root, path);
 		t.object = null;
 		t.data = null;
@@ -137,14 +141,16 @@ class ObjectTree
 	public String Introspect(String path)
 	{
 		TreeNode t = recursiveFind(root, path);
-		if (null == t)
+		if (null == t) {
 			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<node name=\"");
 		sb.append(path);
 		sb.append("\">\n");
-		if (null != t.data)
+		if (null != t.data) {
 			sb.append(t.data);
+		}
 		t = t.down;
 		while (null != t) {
 			sb.append("<node name=\"");
@@ -161,18 +167,23 @@ class ObjectTree
 		String s = "";
 		if (null != current) {
 			s += current.name;
-			if (null != current.object)
+			if (null != current.object) {
 				s += "*";
-			if (null != current.down)
+			}
+			if (null != current.down) {
 				s += "/{" + recursivePrint(current.down) + "}";
-			if (null != current.right)
+			}
+			if (null != current.right) {
 				s += ", " + recursivePrint(current.right);
+			}
 		}
 		return s;
 	}
 
+	@Override
 	public String toString()
 	{
 		return recursivePrint(root);
 	}
+
 }

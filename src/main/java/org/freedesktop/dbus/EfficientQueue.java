@@ -10,13 +10,17 @@
 */
 package org.freedesktop.dbus;
 
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a Message queue which doesn't allocate objects on insertion/removal.
  */
 class EfficientQueue
 {
+
+	final static Logger logger = LoggerFactory.getLogger(EfficientQueue.class);
+
 	private Message[] mv;
 	private int start;
 	private int end;
@@ -30,8 +34,7 @@ class EfficientQueue
 
 	private void grow()
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Growing");
+		logger.debug("Growing");
 		// create new vectors twice as long
 		Message[] oldmv = mv;
 		mv = new Message[oldmv.length * 2];
@@ -50,8 +53,9 @@ class EfficientQueue
 	// create a new vector with just the valid keys in and return it
 	public Message[] getKeys()
 	{
-		if (start == end)
+		if (start == end) {
 			return new Message[0];
+		}
 		Message[] lv;
 		if (start < end) {
 			int size = end - start;
@@ -68,10 +72,10 @@ class EfficientQueue
 
 	private void shrink()
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Shrinking");
-		if (null != mv && mv.length == init_size)
+		logger.debug("Shrinking");
+		if (null != mv && mv.length == init_size) {
 			return;
+		}
 		// reset to original size
 		mv = new Message[init_size];
 		start = 0;
@@ -80,36 +84,38 @@ class EfficientQueue
 
 	public void add(Message m)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Enqueueing Message " + m);
+		logger.debug("Enqueueing Message " + m);
 		// put this at the end
 		mv[end] = m;
 		// move the end
-		if (end == (mv.length - 1))
+		if (end == (mv.length - 1)) {
 			end = 0;
-		else
+		} else {
 			end++;
+		}
 		// if we are out of space, grow.
-		if (end == start)
+		if (end == start) {
 			grow();
+		}
 	}
 
 	public Message remove()
 	{
-		if (start == end)
+		if (start == end) {
 			return null;
+		}
 		// find the item
 		int pos = start;
 		// get the value
 		Message m = mv[pos];
 		// set it as unused
 		mv[pos] = null;
-		if (start == (mv.length - 1))
+		if (start == (mv.length - 1)) {
 			start = 0;
-		else
+		} else {
 			start++;
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Dequeueing " + m);
+		}
+		logger.debug("Dequeueing " + m);
 		return m;
 	}
 
@@ -121,9 +127,10 @@ class EfficientQueue
 
 	public int size()
 	{
-		if (end >= start)
+		if (end >= start) {
 			return end - start;
-		else
+		} else {
 			return mv.length - start + end;
+		}
 	}
 }

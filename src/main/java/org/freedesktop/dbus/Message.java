@@ -12,9 +12,9 @@ package org.freedesktop.dbus;
 
 import static org.freedesktop.dbus.Gettext._;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,12 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import cx.ath.matthew.debug.Debug;
-import cx.ath.matthew.utils.Hexdump;
-
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.MarshallingException;
 import org.freedesktop.dbus.exceptions.UnknownTypeCodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cx.ath.matthew.utils.Hexdump;
 
 /**
  * Superclass of all messages which are sent over the Bus. This class deals with
@@ -35,6 +36,9 @@ import org.freedesktop.dbus.exceptions.UnknownTypeCodeException;
  */
 public class Message
 {
+
+	final static Logger logger = LoggerFactory.getLogger(Message.class);
+
 	/** Defines constants representing the endianness of the message. */
 	public static interface Endian
 	{
@@ -203,8 +207,7 @@ public class Message
 		synchronized (Message.class) {
 			serial = ++globalserial;
 		}
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Creating message with serial " + serial);
+		logger.debug("Creating message with serial " + serial);
 		this.type = type;
 		this.flags = flags;
 		preallocate(4);
@@ -248,11 +251,9 @@ public class Message
 		serial = ((Number) extract(Message.ArgumentType.UINT32_STRING, msg,
 				8)[0]).longValue();
 		bytecounter = msg.length + headers.length + body.length;
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, headers);
+		logger.trace(headers.toString());
 		Object[] hs = extract("a(yv)", headers, 0);
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, Arrays.deepToString(hs));
+		logger.trace(Arrays.deepToString(hs));
 		for (Object o : (Vector<Object>) hs[0]) {
 			this.headers.put((Byte) ((Object[]) o)[0],
 					((Variant<Object>) ((Object[]) o)[1]).getValue());
@@ -282,10 +283,10 @@ public class Message
 	{
 		int increase = num - wiredata.length + bufferuse;
 		if (increase > 0) {
-			if (increase < BUFFERINCREMENT)
+			if (increase < BUFFERINCREMENT) {
 				increase = BUFFERINCREMENT;
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Resizing " + bufferuse);
+			}
+			logger.trace("Resizing " + bufferuse);
 			byte[][] temp = new byte[wiredata.length + increase][];
 			System.arraycopy(wiredata, 0, temp, 0, wiredata.length);
 			wiredata = temp;
@@ -297,20 +298,21 @@ public class Message
 	 */
 	protected void appendBytes(byte[] buf)
 	{
-		if (null == buf)
+		if (null == buf) {
 			return;
+		}
 		if (preallocated > 0) {
-			if (paofs + buf.length > pabuf.length)
+			if (paofs + buf.length > pabuf.length) {
 				throw new ArrayIndexOutOfBoundsException(MessageFormat.format(
 						_("Array index out of bounds, paofs={0}, pabuf.length={1}, buf.length={2}."),
 						new Object[] { paofs, pabuf.length, buf.length }));
+			}
 			System.arraycopy(buf, 0, pabuf, paofs, buf.length);
 			paofs += buf.length;
 			preallocated -= buf.length;
 		} else {
 			if (bufferuse == wiredata.length) {
-				if (Debug.debug)
-					Debug.print(Debug.VERBOSE, "Resizing " + bufferuse);
+				logger.trace("Resizing " + bufferuse);
 				byte[][] temp = new byte[wiredata.length + BUFFERINCREMENT][];
 				System.arraycopy(wiredata, 0, temp, 0, wiredata.length);
 				wiredata = temp;
@@ -330,8 +332,7 @@ public class Message
 			preallocated--;
 		} else {
 			if (bufferuse == wiredata.length) {
-				if (Debug.debug)
-					Debug.print(Debug.VERBOSE, "Resizing " + bufferuse);
+				logger.trace("Resizing " + bufferuse);
 				byte[][] temp = new byte[wiredata.length + BUFFERINCREMENT][];
 				System.arraycopy(wiredata, 0, temp, 0, wiredata.length);
 				wiredata = temp;
@@ -450,13 +451,13 @@ public class Message
 	 */
 	public void marshallint(long l, byte[] buf, int ofs, int width)
 	{
-		if (big)
+		if (big) {
 			marshallintBig(l, buf, ofs, width);
-		else
+		} else {
 			marshallintLittle(l, buf, ofs, width);
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "Marshalled int " + l + " to "
-					+ Hexdump.toHex(buf, ofs, width));
+		}
+		logger.trace("Marshalled int " + l + " to "
+				+ Hexdump.toHex(buf, ofs, width));
 	}
 
 	/**
@@ -509,6 +510,7 @@ public class Message
 	/**
 	 * Formats the message in a human-readable format.
 	 */
+	@Override
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
@@ -521,9 +523,9 @@ public class Message
 		sb.append(' ');
 		sb.append('{');
 		sb.append(' ');
-		if (headers.size() == 0)
+		if (headers.size() == 0) {
 			sb.append('}');
-		else {
+		} else {
 			for (Byte field : headers.keySet()) {
 				sb.append(getHeaderFieldName(field));
 				sb.append('=');
@@ -542,31 +544,33 @@ public class Message
 		try {
 			args = getParameters();
 		} catch (DBusException DBe) {
-			if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, DBe);
+			if (AbstractConnection.EXCEPTION_DEBUG) {
+				logger.error("", DBe);
+			}
 		}
-		if (null == args || 0 == args.length)
+		if (null == args || 0 == args.length) {
 			sb.append('}');
-		else {
+		} else {
 			for (Object o : args) {
-				if (o instanceof Object[])
+				if (o instanceof Object[]) {
 					sb.append(Arrays.deepToString((Object[]) o));
-				else if (o instanceof byte[])
+				} else if (o instanceof byte[]) {
 					sb.append(Arrays.toString((byte[]) o));
-				else if (o instanceof int[])
+				} else if (o instanceof int[]) {
 					sb.append(Arrays.toString((int[]) o));
-				else if (o instanceof short[])
+				} else if (o instanceof short[]) {
 					sb.append(Arrays.toString((short[]) o));
-				else if (o instanceof long[])
+				} else if (o instanceof long[]) {
 					sb.append(Arrays.toString((long[]) o));
-				else if (o instanceof boolean[])
+				} else if (o instanceof boolean[]) {
 					sb.append(Arrays.toString((boolean[]) o));
-				else if (o instanceof double[])
+				} else if (o instanceof double[]) {
 					sb.append(Arrays.toString((double[]) o));
-				else if (o instanceof float[])
+				} else if (o instanceof float[]) {
 					sb.append(Arrays.toString((float[]) o));
-				else
+				} else {
 					sb.append(o.toString());
+				}
 				sb.append(',');
 				sb.append(' ');
 			}
@@ -606,11 +610,9 @@ public class Message
 	{
 		try {
 			int i = sigofs;
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, (Object) bytecounter);
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Appending type: " + ((char) sigb[i])
-						+ " value: " + data);
+			logger.trace(((Object) bytecounter).toString());
+			logger.trace(
+					"Appending type: " + ((char) sigb[i]) + " value: " + data);
 
 			// pad to the alignment of this type.
 			pad(sigb[i]);
@@ -662,14 +664,14 @@ public class Message
 				try {
 					payloadbytes = payload.getBytes("UTF-8");
 				} catch (UnsupportedEncodingException UEe) {
-					if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-						Debug.print(UEe);
+					if (AbstractConnection.EXCEPTION_DEBUG) {
+						logger.error("", UEe);
+					}
 					throw new DBusException(
 							_("System does not support UTF-8 encoding"));
 				}
-				if (Debug.debug)
-					Debug.print(Debug.VERBOSE, "Appending String of length "
-							+ payloadbytes.length);
+				logger.trace(
+						"Appending String of length " + payloadbytes.length);
 				appendint(payloadbytes.length, 4);
 				appendBytes(payloadbytes);
 				appendBytes(padding[1]);
@@ -680,10 +682,11 @@ public class Message
 				// followed by the String, followed by a null byte.
 				// Signatures are generally short, so preallocate the array
 				// for the string, length and null byte.
-				if (data instanceof Type[])
+				if (data instanceof Type[]) {
 					payload = Marshalling.getDBusType((Type[]) data);
-				else
+				} else {
 					payload = (String) data;
+				}
 				byte[] pbytes = payload.getBytes();
 				preallocate(2 + pbytes.length);
 				appendByte((byte) pbytes.length);
@@ -695,10 +698,11 @@ public class Message
 				// padding to the element alignment, then elements in
 				// order. The length is the length from the end of the
 				// initial padding to the end of the last element.
-				if (Debug.debug) {
-					if (data instanceof Object[])
-						Debug.print(Debug.VERBOSE, "Appending array: "
+				if (logger.isTraceEnabled()) {
+					if (data instanceof Object[]) {
+						logger.trace("Appending array: "
 								+ Arrays.deepToString((Object[]) data));
+					}
 				}
 
 				byte[] alen = new byte[4];
@@ -720,38 +724,44 @@ public class Message
 					case ArgumentType.INT32:
 					case ArgumentType.INT64:
 						primbuf = new byte[len * algn];
-						for (int j = 0, k = 0; j < len; j++, k += algn)
+						for (int j = 0, k = 0; j < len; j++, k += algn) {
 							marshallint(Array.getLong(data, j), primbuf, k,
 									algn);
+						}
 						break;
 					case ArgumentType.BOOLEAN:
 						primbuf = new byte[len * algn];
-						for (int j = 0, k = 0; j < len; j++, k += algn)
+						for (int j = 0, k = 0; j < len; j++, k += algn) {
 							marshallint(Array.getBoolean(data, j) ? 1 : 0,
 									primbuf, k, algn);
+						}
 						break;
 					case ArgumentType.DOUBLE:
 						primbuf = new byte[len * algn];
-						if (data instanceof float[])
-							for (int j = 0, k = 0; j < len; j++, k += algn)
+						if (data instanceof float[]) {
+							for (int j = 0, k = 0; j < len; j++, k += algn) {
 								marshallint(
 										Double.doubleToRawLongBits(
 												((float[]) data)[j]),
 										primbuf, k, algn);
-						else
-							for (int j = 0, k = 0; j < len; j++, k += algn)
+							}
+						} else {
+							for (int j = 0, k = 0; j < len; j++, k += algn) {
 								marshallint(
 										Double.doubleToRawLongBits(
 												((double[]) data)[j]),
 										primbuf, k, algn);
+							}
+						}
 						break;
 					case ArgumentType.FLOAT:
 						primbuf = new byte[len * algn];
-						for (int j = 0, k = 0; j < len; j++, k += algn)
+						for (int j = 0, k = 0; j < len; j++, k += algn) {
 							marshallint(
 									Float.floatToRawIntBits(
 											((float[]) data)[j]),
 									primbuf, k, algn);
+						}
 						break;
 					default:
 						throw new MarshallingException(_(
@@ -762,15 +772,17 @@ public class Message
 					Object[] contents = ((List) data).toArray();
 					int diff = i;
 					ensureBuffers(contents.length * 4);
-					for (Object o : contents)
+					for (Object o : contents) {
 						diff = appendone(sigb, i, o);
+					}
 					i = diff;
 				} else if (data instanceof Map) {
 					int diff = i;
 					ensureBuffers(((Map) data).size() * 6);
 					for (Map.Entry<Object, Object> o : ((Map<Object, Object>) data)
-							.entrySet())
+							.entrySet()) {
 						diff = appendone(sigb, i, o);
+					}
 					if (i == diff) {
 						// advance the type parser even on 0-size arrays.
 						Vector<Type> temp = new Vector<Type>();
@@ -785,27 +797,29 @@ public class Message
 					Object[] contents = (Object[]) data;
 					ensureBuffers(contents.length * 4);
 					int diff = i;
-					for (Object o : contents)
+					for (Object o : contents) {
 						diff = appendone(sigb, i, o);
+					}
 					i = diff;
 				}
-				if (Debug.debug)
-					Debug.print(Debug.VERBOSE, "start: " + c + " end: "
-							+ bytecounter + " length: " + (bytecounter - c));
+				logger.trace("start: " + c + " end: " + bytecounter
+						+ " length: " + (bytecounter - c));
 				marshallint(bytecounter - c, alen, 0, 4);
 				break;
 			case ArgumentType.STRUCT1:
 				// Structs are aligned to 8 bytes
 				// and simply contain each element marshalled in order
 				Object[] contents;
-				if (data instanceof Container)
+				if (data instanceof Container) {
 					contents = ((Container) data).getParameters();
-				else
+				} else {
 					contents = (Object[]) data;
+				}
 				ensureBuffers(contents.length * 4);
 				int j = 0;
-				for (i++; sigb[i] != ArgumentType.STRUCT2; i++)
+				for (i++; sigb[i] != ArgumentType.STRUCT2; i++) {
 					i = appendone(sigb, i, contents[j++]);
+				}
 				break;
 			case ArgumentType.DICT_ENTRY1:
 				// Dict entries are the same as structs.
@@ -818,8 +832,9 @@ public class Message
 				} else {
 					contents = (Object[]) data;
 					j = 0;
-					for (i++; sigb[i] != ArgumentType.DICT_ENTRY2; i++)
+					for (i++; sigb[i] != ArgumentType.DICT_ENTRY2; i++) {
 						i = appendone(sigb, i, contents[j++]);
+					}
 				}
 				break;
 			case ArgumentType.VARIANT:
@@ -845,8 +860,9 @@ public class Message
 			}
 			return i;
 		} catch (ClassCastException CCe) {
-			if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, CCe);
+			if (AbstractConnection.EXCEPTION_DEBUG) {
+				logger.error("", CCe);
+			}
 			throw new MarshallingException(MessageFormat.format(
 					_("Trying to marshall to unconvertable type (from {0} to {1})."),
 					new Object[] { data.getClass().getName(), sigb[sigofs] }));
@@ -858,24 +874,21 @@ public class Message
 	 */
 	public void pad(byte type)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "padding for " + (char) type);
+		logger.trace("padding for " + (char) type);
 		int a = getAlignment(type);
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE,
-					preallocated + " " + paofs + " " + bytecounter + " " + a);
+		logger.trace(preallocated + " " + paofs + " " + bytecounter + " " + a);
 		int b = (int) ((bytecounter - preallocated) % a);
-		if (0 == b)
+		if (0 == b) {
 			return;
+		}
 		a = (a - b);
 		if (preallocated > 0) {
 			paofs += a;
 			preallocated -= a;
-		} else
+		} else {
 			appendBytes(padding[a]);
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE,
-					preallocated + " " + paofs + " " + bytecounter + " " + a);
+		}
+		logger.trace(preallocated + " " + paofs + " " + bytecounter + " " + a);
 	}
 
 	/**
@@ -927,15 +940,13 @@ public class Message
 	 */
 	public void append(String sig, Object... data) throws DBusException
 	{
-		if (Debug.debug)
-			Debug.print(Debug.DEBUG, "Appending sig: " + sig + " data: "
-					+ Arrays.deepToString(data));
+		logger.trace("Appending sig: " + sig + " data: "
+				+ Arrays.deepToString(data));
 		byte[] sigb = sig.getBytes();
 		int j = 0;
 		for (int i = 0; i < sigb.length; i++) {
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Appending item: " + i + " "
-						+ ((char) sigb[i]) + " " + j);
+			logger.trace(
+					"Appending item: " + i + " " + ((char) sigb[i]) + " " + j);
 			i = appendone(sigb, i, data[j++]);
 		}
 	}
@@ -951,11 +962,11 @@ public class Message
 	 */
 	public int align(int current, byte type)
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "aligning to " + (char) type);
+		logger.trace("aligning to " + (char) type);
 		int a = getAlignment(type);
-		if (0 == (current % a))
+		if (0 == (current % a)) {
 			return current;
+		}
 		return current + (a - (current % a));
 	}
 
@@ -977,9 +988,8 @@ public class Message
 	private Object extractone(byte[] sigb, byte[] buf, int[] ofs,
 			boolean contained) throws DBusException
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "Extracting type: "
-					+ ((char) sigb[ofs[0]]) + " from offset " + ofs[1]);
+		logger.trace("Extracting type: " + ((char) sigb[ofs[0]])
+				+ " from offset " + ofs[1]);
 		Object rv = null;
 		ofs[1] = align(ofs[1], sigb[ofs[0]]);
 		switch (sigb[ofs[0]]) {
@@ -1038,15 +1048,15 @@ public class Message
 			break;
 		case ArgumentType.ARRAY:
 			long size = demarshallint(buf, ofs[1], 4);
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Reading array of size: " + size);
+			logger.trace("Reading array of size: " + size);
 			ofs[1] += 4;
 			byte algn = (byte) getAlignment(sigb[++ofs[0]]);
 			ofs[1] = align(ofs[1], sigb[ofs[0]]);
 			int length = (int) (size / algn);
-			if (length > DBusConnection.MAX_ARRAY_LENGTH)
+			if (length > DBusConnection.MAX_ARRAY_LENGTH) {
 				throw new MarshallingException(_("Arrays must not exceed ")
 						+ DBusConnection.MAX_ARRAY_LENGTH);
+			}
 			// optimise primatives
 			switch (sigb[ofs[0]]) {
 			case ArgumentType.BYTE:
@@ -1056,37 +1066,43 @@ public class Message
 				break;
 			case ArgumentType.INT16:
 				rv = new short[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((short[]) rv)[j] = (short) demarshallint(buf, ofs[1],
 							algn);
+				}
 				break;
 			case ArgumentType.INT32:
 				rv = new int[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((int[]) rv)[j] = (int) demarshallint(buf, ofs[1], algn);
+				}
 				break;
 			case ArgumentType.INT64:
 				rv = new long[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((long[]) rv)[j] = demarshallint(buf, ofs[1], algn);
+				}
 				break;
 			case ArgumentType.BOOLEAN:
 				rv = new boolean[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((boolean[]) rv)[j] = (1 == demarshallint(buf, ofs[1],
 							algn));
+				}
 				break;
 			case ArgumentType.FLOAT:
 				rv = new float[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((float[]) rv)[j] = Float.intBitsToFloat(
 							(int) demarshallint(buf, ofs[1], algn));
+				}
 				break;
 			case ArgumentType.DOUBLE:
 				rv = new double[length];
-				for (int j = 0; j < length; j++, ofs[1] += algn)
+				for (int j = 0; j < length; j++, ofs[1] += algn) {
 					((double[]) rv)[j] = Double
 							.longBitsToDouble(demarshallint(buf, ofs[1], algn));
+				}
 				break;
 			case ArgumentType.DICT_ENTRY1:
 				if (0 == size) {
@@ -1099,9 +1115,8 @@ public class Message
 					// the stack
 					int temp4 = Marshalling.getJavaType(temp3, temp, 1) - 1;
 					ofs[0] += temp4;
-					if (Debug.debug)
-						Debug.print(Debug.VERBOSE, "Aligned type: " + temp3
-								+ " " + temp4 + " " + ofs[0]);
+					logger.trace("Aligned type: " + temp3 + " " + temp4 + " "
+							+ ofs[0]);
 				}
 				int ofssave = ofs[0];
 				long end = ofs[1] + size;
@@ -1124,9 +1139,8 @@ public class Message
 					// the stack
 					int temp4 = Marshalling.getJavaType(temp3, temp, 1) - 1;
 					ofs[0] += temp4;
-					if (Debug.debug)
-						Debug.print(Debug.VERBOSE, "Aligned type: " + temp3
-								+ " " + temp4 + " " + ofs[0]);
+					logger.trace("Aligned type: " + temp3 + " " + temp4 + " "
+							+ ofs[0]);
 				}
 				ofssave = ofs[0];
 				end = ofs[1] + size;
@@ -1137,22 +1151,25 @@ public class Message
 				}
 				rv = contents;
 			}
-			if (contained && !(rv instanceof List) && !(rv instanceof Map))
+			if (contained && !(rv instanceof List) && !(rv instanceof Map)) {
 				rv = ArrayFrob.listify(rv);
+			}
 			break;
 		case ArgumentType.STRUCT1:
 			Vector<Object> contents = new Vector<Object>();
-			while (sigb[++ofs[0]] != ArgumentType.STRUCT2)
+			while (sigb[++ofs[0]] != ArgumentType.STRUCT2) {
 				contents.add(extractone(sigb, buf, ofs, true));
+			}
 			rv = contents.toArray();
 			break;
 		case ArgumentType.DICT_ENTRY1:
 			Object[] decontents = new Object[2];
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Extracting Dict Entry ("
-						+ Hexdump.toAscii(sigb, ofs[0], sigb.length - ofs[0])
-						+ ") from: "
-						+ Hexdump.toHex(buf, ofs[1], buf.length - ofs[1]));
+			logger.trace(
+					"Extracting Dict Entry ("
+							+ Hexdump.toAscii(sigb, ofs[0],
+									sigb.length - ofs[0])
+							+ ") from: "
+							+ Hexdump.toHex(buf, ofs[1], buf.length - ofs[1]));
 			ofs[0]++;
 			decontents[0] = extractone(sigb, buf, ofs, true);
 			ofs[0]++;
@@ -1174,8 +1191,9 @@ public class Message
 			try {
 				rv = new String(buf, ofs[1], length, "UTF-8");
 			} catch (UnsupportedEncodingException UEe) {
-				if (AbstractConnection.EXCEPTION_DEBUG && Debug.debug)
-					Debug.print(UEe);
+				if (AbstractConnection.EXCEPTION_DEBUG) {
+					logger.error("", UEe);
+				}
 				throw new DBusException(
 						_("System does not support UTF-8 encoding"));
 			}
@@ -1195,14 +1213,14 @@ public class Message
 		default:
 			throw new UnknownTypeCodeException(sigb[ofs[0]]);
 		}
-		if (Debug.debug)
-			if (rv instanceof Object[])
-				Debug.print(Debug.VERBOSE,
-						"Extracted: " + Arrays.deepToString((Object[]) rv)
-								+ " (now at " + ofs[1] + ")");
-			else
-				Debug.print(Debug.VERBOSE,
-						"Extracted: " + rv + " (now at " + ofs[1] + ")");
+		if (logger.isTraceEnabled()) {
+			if (rv instanceof Object[]) {
+				logger.trace("Extracted: " + Arrays.deepToString((Object[]) rv)
+						+ " (now at " + ofs[1] + ")");
+			} else {
+				logger.trace("Extracted: " + rv + " (now at " + ofs[1] + ")");
+			}
+		}
 		return rv;
 	}
 
@@ -1239,9 +1257,8 @@ public class Message
 	public Object[] extract(String sig, byte[] buf, int[] ofs)
 			throws DBusException
 	{
-		if (Debug.debug)
-			Debug.print(Debug.VERBOSE, "extract(" + sig + ",#" + buf.length
-					+ ", {" + ofs[0] + "," + ofs[1] + "}");
+		logger.trace("extract(" + sig + ",#" + buf.length + ", {" + ofs[0] + ","
+				+ ofs[1] + "}");
 		Vector<Object> rv = new Vector<Object>();
 		byte[] sigb = sig.getBytes();
 		for (int[] i = ofs; i[0] < sigb.length; i[0]++) {
@@ -1280,8 +1297,9 @@ public class Message
 	public String getPath()
 	{
 		Object o = headers.get(HeaderField.PATH);
-		if (null == o)
+		if (null == o) {
 			return null;
+		}
 		return o.toString();
 	}
 
@@ -1290,10 +1308,11 @@ public class Message
 	 */
 	public String getName()
 	{
-		if (this instanceof Error)
+		if (this instanceof Error) {
 			return (String) headers.get(HeaderField.ERROR_NAME);
-		else
+		} else {
 			return (String) headers.get(HeaderField.MEMBER);
+		}
 	}
 
 	/**
@@ -1330,8 +1349,9 @@ public class Message
 	public long getReplySerial()
 	{
 		Number l = (Number) headers.get(HeaderField.REPLY_SERIAL);
-		if (null == l)
+		if (null == l) {
 			return 0;
+		}
 		return l.longValue();
 	}
 
@@ -1344,8 +1364,9 @@ public class Message
 			String sig = (String) headers.get(HeaderField.SIGNATURE);
 			if (null != sig && 0 != body.length) {
 				args = extract(sig, body, 0);
-			} else
+			} else {
 				args = new Object[0];
+			}
 		}
 		return args;
 	}
@@ -1382,4 +1403,5 @@ public class Message
 			appendBytes(body);
 		}
 	}
+
 }

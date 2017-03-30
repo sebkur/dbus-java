@@ -12,9 +12,9 @@ package org.freedesktop.dbus;
 
 import static org.freedesktop.dbus.Gettext._;
 
-import java.lang.reflect.Proxy;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -23,8 +23,8 @@ import java.util.Vector;
 
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
-
-import cx.ath.matthew.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles a peer to peer connection between two applications withou a bus
@@ -36,6 +36,10 @@ import cx.ath.matthew.debug.Debug;
  */
 public class DirectConnection extends AbstractConnection
 {
+
+	final static Logger logger = LoggerFactory
+			.getLogger(DirectConnection.class);
+
 	/**
 	 * Create a direct connection to another application.
 	 * 
@@ -52,13 +56,15 @@ public class DirectConnection extends AbstractConnection
 			transport = new Transport(addr, AbstractConnection.TIMEOUT);
 			connected = true;
 		} catch (IOException IOe) {
-			if (EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, IOe);
+			if (EXCEPTION_DEBUG) {
+				logger.error("", IOe);
+			}
 			throw new DBusException(
 					_("Failed to connect to bus ") + IOe.getMessage());
 		} catch (ParseException Pe) {
-			if (EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, Pe);
+			if (EXCEPTION_DEBUG) {
+				logger.error("", Pe);
+			}
 			throw new DBusException(
 					_("Failed to connect to bus ") + Pe.getMessage());
 		}
@@ -86,8 +92,7 @@ public class DirectConnection extends AbstractConnection
 		}
 		address += ",port=" + port;
 		address += ",guid=" + Transport.genGUID();
-		if (Debug.debug)
-			Debug.print("Created Session address: " + address);
+		logger.debug("Created Session address: " + address);
 		return address;
 	}
 
@@ -103,16 +108,15 @@ public class DirectConnection extends AbstractConnection
 		Random r = new Random();
 		do {
 			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 10; i++) {
 				sb.append((char) ((Math.abs(r.nextInt()) % 26) + 65));
+			}
 			path = path.replaceAll("..........$", sb.toString());
-			if (Debug.debug)
-				Debug.print(Debug.VERBOSE, "Trying path " + path);
+			logger.trace("Trying path " + path);
 		} while ((new File(path)).exists());
 		address += "abstract=" + path;
 		address += ",guid=" + Transport.genGUID();
-		if (Debug.debug)
-			Debug.print("Created Session address: " + address);
+		logger.debug("Created Session address: " + address);
 		return address;
 	}
 
@@ -149,9 +153,10 @@ public class DirectConnection extends AbstractConnection
 				}
 			}
 
-			if (ifcs.size() == 0)
+			if (ifcs.size() == 0) {
 				throw new DBusException(
 						_("Could not find an interface to cast to"));
+			}
 
 			RemoteObject ro = new RemoteObject(null, path, null, false);
 			DBusInterface newi = (DBusInterface) Proxy.newProxyInstance(
@@ -160,8 +165,9 @@ public class DirectConnection extends AbstractConnection
 			importedObjects.put(newi, ro);
 			return newi;
 		} catch (Exception e) {
-			if (EXCEPTION_DEBUG && Debug.debug)
-				Debug.print(Debug.ERR, e);
+			if (EXCEPTION_DEBUG) {
+				logger.error("", e);
+			}
 			throw new DBusException(MessageFormat.format(
 					_("Failed to create proxy object for {0}; reason: {1}."),
 					new Object[] { path, e.getMessage() }));
@@ -178,8 +184,9 @@ public class DirectConnection extends AbstractConnection
 			unExportObject(path);
 			o = null;
 		}
-		if (null != o)
+		if (null != o) {
 			return o.object.get();
+		}
 		return dynamicProxy(path);
 	}
 
@@ -208,12 +215,14 @@ public class DirectConnection extends AbstractConnection
 	 */
 	public DBusInterface getRemoteObject(String objectpath) throws DBusException
 	{
-		if (null == objectpath)
+		if (null == objectpath) {
 			throw new DBusException(_("Invalid object path: null"));
+		}
 
 		if (!objectpath.matches(OBJECT_REGEX)
-				|| objectpath.length() > MAX_NAME_LENGTH)
+				|| objectpath.length() > MAX_NAME_LENGTH) {
 			throw new DBusException(_("Invalid object path: ") + objectpath);
+		}
 
 		return dynamicProxy(objectpath);
 	}
@@ -241,23 +250,28 @@ public class DirectConnection extends AbstractConnection
 	public DBusInterface getRemoteObject(String objectpath,
 			Class<? extends DBusInterface> type) throws DBusException
 	{
-		if (null == objectpath)
+		if (null == objectpath) {
 			throw new DBusException(_("Invalid object path: null"));
-		if (null == type)
+		}
+		if (null == type) {
 			throw new ClassCastException(_("Not A DBus Interface"));
+		}
 
 		if (!objectpath.matches(OBJECT_REGEX)
-				|| objectpath.length() > MAX_NAME_LENGTH)
+				|| objectpath.length() > MAX_NAME_LENGTH) {
 			throw new DBusException(_("Invalid object path: ") + objectpath);
+		}
 
-		if (!DBusInterface.class.isAssignableFrom(type))
+		if (!DBusInterface.class.isAssignableFrom(type)) {
 			throw new ClassCastException(_("Not A DBus Interface"));
+		}
 
 		// don't let people import things which don't have a
 		// valid D-Bus interface name
-		if (type.getName().equals(type.getSimpleName()))
+		if (type.getName().equals(type.getSimpleName())) {
 			throw new DBusException(
 					_("DBusInterfaces cannot be declared outside a package"));
+		}
 
 		RemoteObject ro = new RemoteObject(null, objectpath, type, false);
 		DBusInterface i = (DBusInterface) Proxy.newProxyInstance(
@@ -267,6 +281,7 @@ public class DirectConnection extends AbstractConnection
 		return i;
 	}
 
+	@Override
 	protected <T extends DBusSignal> void removeSigHandler(DBusMatchRule rule,
 			DBusSigHandler<T> handler) throws DBusException
 	{
@@ -284,6 +299,7 @@ public class DirectConnection extends AbstractConnection
 		}
 	}
 
+	@Override
 	protected <T extends DBusSignal> void addSigHandler(DBusMatchRule rule,
 			DBusSigHandler<T> handler) throws DBusException
 	{
@@ -296,11 +312,13 @@ public class DirectConnection extends AbstractConnection
 				v = new Vector<DBusSigHandler<? extends DBusSignal>>();
 				v.add(handler);
 				handledSignals.put(key, v);
-			} else
+			} else {
 				v.add(handler);
+			}
 		}
 	}
 
+	@Override
 	DBusInterface getExportedObject(String source, String path)
 			throws DBusException
 	{
