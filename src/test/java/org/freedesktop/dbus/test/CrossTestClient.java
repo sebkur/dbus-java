@@ -39,17 +39,17 @@ import org.freedesktop.dbus.types.DBusMapType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class cross_test_client implements DBus.Binding.TestClient,
+public class CrossTestClient implements DBus.Binding.TestClient,
 		DBusSigHandler<DBus.Binding.TestSignals.Triggered>
 {
 
 	final static Logger logger = LoggerFactory
-			.getLogger(cross_test_client.class);
+			.getLogger(CrossTestClient.class);
 
 	private DBusConnection conn;
 	private static Set<String> passed = new TreeSet<String>();
 	private static Map<String, List<String>> failed = new HashMap<String, List<String>>();
-	private static cross_test_client ctc;
+	private static CrossTestClient ctc;
 	static {
 		List<String> l = new Vector<String>();
 		l.add("Signal never arrived");
@@ -59,7 +59,7 @@ public class cross_test_client implements DBus.Binding.TestClient,
 		failed.put("org.freedesktop.DBus.Binding.TestClient.Response", l);
 	}
 
-	public cross_test_client(DBusConnection conn)
+	public CrossTestClient(DBusConnection conn)
 	{
 		this.conn = conn;
 	}
@@ -663,7 +663,7 @@ public class cross_test_client implements DBus.Binding.TestClient,
 			/* init */
 			DBusConnection conn = DBusConnection
 					.getConnection(DBusConnection.SESSION);
-			ctc = new cross_test_client(conn);
+			ctc = new CrossTestClient(conn);
 			conn.exportObject("/Test", ctc);
 			conn.addSigHandler(DBus.Binding.TestSignals.Triggered.class, ctc);
 			DBus.Binding.Tests tests = conn.getRemoteObject(

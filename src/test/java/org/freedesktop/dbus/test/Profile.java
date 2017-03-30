@@ -26,7 +26,7 @@ class ProfileHandler implements DBusSigHandler<Profiler.ProfileSignal>
 
 	public void handle(Profiler.ProfileSignal s)
 	{
-		if (0 == (c++ % profile.SIGNAL_INNER))
+		if (0 == (c++ % Profile.SIGNAL_INNER))
 			System.out.print("-");
 	}
 }
@@ -34,7 +34,7 @@ class ProfileHandler implements DBusSigHandler<Profiler.ProfileSignal>
 /**
  * Profiling tests.
  */
-public class profile
+public class Profile
 {
 	public static final int SIGNAL_INNER = 100;
 	public static final int SIGNAL_OUTER = 100;

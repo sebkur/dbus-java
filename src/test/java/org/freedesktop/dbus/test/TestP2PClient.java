@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DirectConnection;
 
-public class test_p2p_client
+public class TestP2PClient
 {
 	public static void main(String[] args) throws Exception
 	{

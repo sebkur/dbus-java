@@ -13,7 +13,7 @@ package org.freedesktop.dbus.test;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
 
-public class two_part_test_server implements TwoPartInterface,
+public class TwoPartTestServer implements TwoPartInterface,
 		DBusSigHandler<TwoPartInterface.TwoPartSignal>
 {
 	public class two_part_test_object implements TwoPartObject
@@ -32,7 +32,7 @@ public class two_part_test_server implements TwoPartInterface,
 
 	private DBusConnection conn;
 
-	public two_part_test_server(DBusConnection conn)
+	public TwoPartTestServer(DBusConnection conn)
 	{
 		this.conn = conn;
 	}
@@ -64,7 +64,7 @@ public class two_part_test_server implements TwoPartInterface,
 		DBusConnection conn = DBusConnection
 				.getConnection(DBusConnection.SESSION);
 		conn.requestBusName("org.freedesktop.dbus.test.two_part_server");
-		two_part_test_server server = new two_part_test_server(conn);
+		TwoPartTestServer server = new TwoPartTestServer(conn);
 		conn.exportObject("/", server);
 		conn.addSigHandler(TwoPartInterface.TwoPartSignal.class, server);
 		while (true)

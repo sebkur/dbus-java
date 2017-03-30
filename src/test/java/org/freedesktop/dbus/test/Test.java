@@ -91,14 +91,14 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 	{
 		if (f.length < 4 || f[0] != 17.093f || f[1] != -23f || f[2] != 0.0f
 				|| f[3] != 31.42f)
-			test.fail("testfloat got incorrect array");
+			Test.fail("testfloat got incorrect array");
 		return f[0];
 	}
 
 	public void newpathtest(Path p)
 	{
 		if (!p.toString().equals("/new/path/test"))
-			test.fail("new path test got wrong path");
+			Test.fail("new path test got wrong path");
 	}
 
 	public void waitawhile()
@@ -115,7 +115,7 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 	{
 		System.out.println("Showing Stuff: " + in.getClass() + "(" + in + ")");
 		if (!(in instanceof Integer) || ((Integer) in).intValue() != 234)
-			test.fail("show received the wrong arguments");
+			Test.fail("show received the wrong arguments");
 		DBusCallInfo info = DBusConnection.getCallInfo();
 		List<Integer> l = new Vector<Integer>();
 		l.add(1953);
@@ -134,7 +134,7 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 				|| !"bar".equals(foo.a) || foo.b.intValue() != 52
 				|| !(foo.c.getValue() instanceof Boolean)
 				|| ((Boolean) foo.c.getValue()).booleanValue() != true)
-			test.fail("dostuff received the wrong arguments");
+			Test.fail("dostuff received the wrong arguments");
 		return (T) foo.c.getValue();
 	}
 
@@ -153,19 +153,19 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 		if (ss.size() != 5 || !"hi".equals(ss.get(0))
 				|| !"hello".equals(ss.get(1)) || !"hej".equals(ss.get(2))
 				|| !"hey".equals(ss.get(3)) || !"aloha".equals(ss.get(4)))
-			test.fail("sampleArray, String array contents incorrect");
+			Test.fail("sampleArray, String array contents incorrect");
 		System.out.println("Got an array:");
 		for (Integer i : is)
 			System.out.println("--" + i);
 		if (is.length != 4 || is[0].intValue() != 1 || is[1].intValue() != 5
 				|| is[2].intValue() != 7 || is[3].intValue() != 9)
-			test.fail("sampleArray, Integer array contents incorrect");
+			Test.fail("sampleArray, Integer array contents incorrect");
 		System.out.println("Got an array:");
 		for (long l : ls)
 			System.out.println("--" + l);
 		if (ls.length != 4 || ls[0] != 2 || ls[1] != 6 || ls[2] != 8
 				|| ls[3] != 12)
-			test.fail("sampleArray, Integer array contents incorrect");
+			Test.fail("sampleArray, Integer array contents incorrect");
 		Vector<Integer> v = new Vector<Integer>();
 		v.add(-1);
 		v.add(-5);
@@ -195,40 +195,40 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 			T v)
 	{
 		if (null == n)
-			test.fail("List was null");
+			Test.fail("List was null");
 		if (n.size() != 3)
-			test.fail("List was wrong size (expected 3, actual " + n.size()
+			Test.fail("List was wrong size (expected 3, actual " + n.size()
 					+ ")");
 		if (n.get(0) != 2L || n.get(1) != 5L || n.get(2) != 71L)
-			test.fail("List has wrong contents");
+			Test.fail("List has wrong contents");
 		if (!(v instanceof Integer))
-			test.fail("v not an Integer");
+			Test.fail("v not an Integer");
 		if (((Integer) v) != 13)
-			test.fail("v is incorrect");
+			Test.fail("v is incorrect");
 		if (null == m)
-			test.fail("Map was null");
+			Test.fail("Map was null");
 		if (m.size() != 1)
-			test.fail("Map was wrong size");
+			Test.fail("Map was wrong size");
 		if (!m.keySet().contains("stuff"))
-			test.fail("Incorrect key");
+			Test.fail("Incorrect key");
 		Map<UInt16, Short> mus = m.get("stuff");
 		if (null == mus)
-			test.fail("Sub-Map was null");
+			Test.fail("Sub-Map was null");
 		if (mus.size() != 3)
-			test.fail("Sub-Map was wrong size");
+			Test.fail("Sub-Map was wrong size");
 		if (!(new Short((short) 5).equals(mus.get(new UInt16(4)))))
-			test.fail("Sub-Map has wrong contents");
+			Test.fail("Sub-Map has wrong contents");
 		if (!(new Short((short) 6).equals(mus.get(new UInt16(5)))))
-			test.fail("Sub-Map has wrong contents");
+			Test.fail("Sub-Map has wrong contents");
 		if (!(new Short((short) 7).equals(mus.get(new UInt16(6)))))
-			test.fail("Sub-Map has wrong contents");
+			Test.fail("Sub-Map has wrong contents");
 		return -5;
 	}
 
 	public DBusInterface getThis(DBusInterface t)
 	{
 		if (!t.equals(this))
-			test.fail("Didn't get this properly");
+			Test.fail("Didn't get this properly");
 		return this;
 	}
 
@@ -245,7 +245,7 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 				|| !(s.getString().equals("woo"))
 				|| !(s.getVector().size() == 3) || !(s.getVector().get(0) == 1)
 				|| !(s.getVector().get(1) == 2) || !(s.getVector().get(2) == 3))
-			test.fail("Error in recieving custom synchronisation");
+			Test.fail("Error in recieving custom synchronisation");
 		return s;
 	}
 
@@ -256,7 +256,7 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 					"/Test", TestRemoteInterface.class);
 			return tri.getName();
 		} catch (DBusException DBe) {
-			test.fail("Failed with error: " + DBe);
+			Test.fail("Failed with error: " + DBe);
 			return "";
 		}
 	}
@@ -311,7 +311,7 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 						((ParameterizedType) s[1]).getActualTypeArguments()[0])
 				|| !Integer.class.equals(
 						((ParameterizedType) s[1]).getActualTypeArguments()[1]))
-			test.fail("Didn't send types correctly");
+			Test.fail("Didn't send types correctly");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -321,16 +321,16 @@ class testclass implements TestRemoteInterface, TestRemoteInterface2,
 				|| ((Map<Object, Object>) v.getValue()).size() != 1
 				|| !"moo".equals(
 						((Map<Object, Object>) v.getValue()).get("cow")))
-			test.fail("Didn't send variant correctly");
+			Test.fail("Didn't send variant correctly");
 	}
 
 	public void reg13291(byte[] as, byte[] bs)
 	{
 		if (as.length != bs.length)
-			test.fail("didn't receive identical byte arrays");
+			Test.fail("didn't receive identical byte arrays");
 		for (int i = 0; i < as.length; i++)
 			if (as[i] != bs[i])
-				test.fail("didn't receive identical byte arrays");
+				Test.fail("didn't receive identical byte arrays");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -386,15 +386,15 @@ class renamedsignalhandler
 	/** Handling a signal */
 	public void handle(TestSignalInterface2.TestRenamedSignal t)
 	{
-		if (false == test.done5) {
-			test.done5 = true;
+		if (false == Test.done5) {
+			Test.done5 = true;
 		} else {
-			test.fail("SignalHandler R has been run too many times");
+			Test.fail("SignalHandler R has been run too many times");
 		}
 		System.out.println("SignalHandler R Running");
 		System.out.println("string(" + t.value + ") int(" + t.number + ")");
 		if (!"Bar".equals(t.value) || !(new UInt32(42)).equals(t.number))
-			test.fail("Incorrect TestRenamedSignal parameters");
+			Test.fail("Incorrect TestRenamedSignal parameters");
 	}
 }
 
@@ -407,10 +407,10 @@ class emptysignalhandler
 	/** Handling a signal */
 	public void handle(TestSignalInterface.EmptySignal t)
 	{
-		if (false == test.done7) {
-			test.done7 = true;
+		if (false == Test.done7) {
+			Test.done7 = true;
 		} else {
-			test.fail("SignalHandler E has been run too many times");
+			Test.fail("SignalHandler E has been run too many times");
 		}
 		System.out.println("SignalHandler E Running");
 	}
@@ -433,15 +433,15 @@ class disconnecthandler implements DBusSigHandler<DBus.Local.Disconnected>
 	/** Handling a signal */
 	public void handle(DBus.Local.Disconnected t)
 	{
-		if (false == test.done6) {
-			test.done6 = true;
+		if (false == Test.done6) {
+			Test.done6 = true;
 			System.out.println("Handling disconnect, unregistering handler");
 			try {
 				conn.removeSigHandler(
 						TestSignalInterface2.TestRenamedSignal.class, sh);
 			} catch (DBusException DBe) {
 				DBe.printStackTrace();
-				test.fail("Disconnect handler threw an exception: " + DBe);
+				Test.fail("Disconnect handler threw an exception: " + DBe);
 			}
 		}
 	}
@@ -468,15 +468,15 @@ class signalhandler implements DBusSigHandler<TestSignalInterface.TestSignal>
 	/** Handling a signal */
 	public void handle(TestSignalInterface.TestSignal t)
 	{
-		if (false == test.done1) {
-			test.done1 = true;
+		if (false == Test.done1) {
+			Test.done1 = true;
 		} else {
-			test.fail("SignalHandler 1 has been run too many times");
+			Test.fail("SignalHandler 1 has been run too many times");
 		}
 		System.out.println("SignalHandler 1 Running");
 		System.out.println("string(" + t.value + ") int(" + t.number + ")");
 		if (!"Bar".equals(t.value) || !(new UInt32(42)).equals(t.number))
-			test.fail("Incorrect TestSignal parameters");
+			Test.fail("Incorrect TestSignal parameters");
 	}
 }
 
@@ -490,14 +490,14 @@ class arraysignalhandler
 	public void handle(TestSignalInterface.TestArraySignal t)
 	{
 		try {
-			if (false == test.done2) {
-				test.done2 = true;
+			if (false == Test.done2) {
+				Test.done2 = true;
 			} else {
-				test.fail("SignalHandler 2 has been run too many times");
+				Test.fail("SignalHandler 2 has been run too many times");
 			}
 			System.out.println("SignalHandler 2 Running");
 			if (t.v.size() != 1)
-				test.fail(
+				Test.fail(
 						"Incorrect TestArraySignal array length: should be 1, actually "
 								+ t.v.size());
 			System.out.println("Got a test array signal with Parameters: ");
@@ -513,10 +513,10 @@ class arraysignalhandler
 					|| !"hej".equals(t.v.get(0).a.get(2))
 					|| !"hey".equals(t.v.get(0).a.get(3))
 					|| !"aloha".equals(t.v.get(0).a.get(4)))
-				test.fail("Incorrect TestArraySignal parameters");
+				Test.fail("Incorrect TestArraySignal parameters");
 
 			if (t.m.keySet().size() != 2)
-				test.fail(
+				Test.fail(
 						"Incorrect TestArraySignal map size: should be 2, actually "
 								+ t.m.keySet().size());
 			if (!(t.m.get(new UInt32(1)).b.getValue() instanceof UInt64)
@@ -525,11 +525,11 @@ class arraysignalhandler
 					|| !(t.m.get(new UInt32(42)).b.getValue() instanceof UInt64)
 					|| 789L != ((UInt64) t.m.get(new UInt32(42)).b.getValue())
 							.longValue())
-				test.fail("Incorrect TestArraySignal parameters");
+				Test.fail("Incorrect TestArraySignal parameters");
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			test.fail("SignalHandler 2 threw an exception: " + e);
+			Test.fail("SignalHandler 2 threw an exception: " + e);
 		}
 	}
 }
@@ -542,10 +542,10 @@ class objectsignalhandler
 {
 	public void handle(TestSignalInterface.TestObjectSignal s)
 	{
-		if (false == test.done3) {
-			test.done3 = true;
+		if (false == Test.done3) {
+			Test.done3 = true;
 		} else {
-			test.fail("SignalHandler 3 has been run too many times");
+			Test.fail("SignalHandler 3 has been run too many times");
 		}
 		System.out.println(s.otherpath);
 	}
@@ -559,7 +559,7 @@ class badarraysignalhandler<T extends DBusSignal> implements DBusSigHandler<T>
 	/** Handling a signal */
 	public void handle(T s)
 	{
-		test.fail("This signal handler shouldn't be called");
+		Test.fail("This signal handler shouldn't be called");
 	}
 }
 
@@ -575,10 +575,10 @@ class callbackhandler implements CallbackHandler<String>
 		col.setDecomposition(Collator.FULL_DECOMPOSITION);
 		col.setStrength(Collator.PRIMARY);
 		if (0 != col.compare("This Is A UTF-8 Name: ﺱ !!", r))
-			test.fail("call with callback, wrong return value");
-		if (test.done4)
-			test.fail("Already ran callback handler");
-		test.done4 = true;
+			Test.fail("call with callback, wrong return value");
+		if (Test.done4)
+			Test.fail("Already ran callback handler");
+		Test.done4 = true;
 	}
 
 	public void handleError(DBusExecutionException e)
@@ -586,15 +586,15 @@ class callbackhandler implements CallbackHandler<String>
 		System.out.println("Handling error callback: " + e + " message = '"
 				+ e.getMessage() + "'");
 		if (!(e instanceof TestException))
-			test.fail("Exception is of the wrong sort");
+			Test.fail("Exception is of the wrong sort");
 		Collator col = Collator.getInstance();
 		col.setDecomposition(Collator.FULL_DECOMPOSITION);
 		col.setStrength(Collator.PRIMARY);
 		if (0 != col.compare("test", e.getMessage()))
-			test.fail("Exception has the wrong message");
-		if (test.done8)
-			test.fail("Already ran callback error handler");
-		test.done8 = true;
+			Test.fail("Exception has the wrong message");
+		if (Test.done8)
+			Test.fail("Already ran callback error handler");
+		Test.done8 = true;
 	}
 }
 
@@ -602,7 +602,7 @@ class callbackhandler implements CallbackHandler<String>
  * This is a test program which sends and recieves a signal, implements, exports
  * and calls a remote method.
  */
-public class test
+public class Test
 {
 	public static boolean done1 = false;
 	public static boolean done2 = false;
@@ -682,9 +682,9 @@ public class test
 						TestSignalInterface.TestSignal.class, bash);
 				System.out.println("done");
 			} catch (MatchRuleInvalid MRI) {
-				test.fail("Failed to add handlers: " + MRI.getMessage());
+				Test.fail("Failed to add handlers: " + MRI.getMessage());
 			} catch (DBusException DBe) {
-				test.fail("Failed to add handlers: " + DBe.getMessage());
+				Test.fail("Failed to add handlers: " + DBe.getMessage());
 			}
 
 			System.out.println("Listening for Method Calls");
@@ -870,12 +870,12 @@ public class test
 			try {
 				System.out.println("Throwing stuff");
 				tri.throwme();
-				test.fail("Method Execution should have failed");
+				Test.fail("Method Execution should have failed");
 			} catch (TestException Te) {
 				System.out.println("Remote Method Failed with: "
 						+ Te.getClass().getName() + " " + Te.getMessage());
 				if (!Te.getMessage().equals("test"))
-					test.fail("Error message was not correct");
+					Test.fail("Error message was not correct");
 			}
 
 			/* Test type signatures */
@@ -891,7 +891,7 @@ public class test
 				tri = clientconn.getRemoteObject("foo.bar.NotATest", "/Moofle",
 						TestRemoteInterface.class);
 				System.out.println("Got Remote Name: " + tri.getName());
-				test.fail("Method Execution should have failed");
+				Test.fail("Method Execution should have failed");
 			} catch (ServiceUnknown SU) {
 				System.out.println("Remote Method Failed with: "
 						+ SU.getClass().getName() + " " + SU.getMessage());
@@ -903,7 +903,7 @@ public class test
 				tri = clientconn.getRemoteObject("foo.bar.Test", "/Moofle",
 						TestRemoteInterface.class);
 				System.out.println("Got Remote Name: " + tri.getName());
-				test.fail("Method Execution should have failed");
+				Test.fail("Method Execution should have failed");
 			} catch (UnknownObject UO) {
 				System.out.println("Remote Method Failed with: "
 						+ UO.getClass().getName() + " " + UO.getMessage());
@@ -915,7 +915,7 @@ public class test
 				tri = clientconn.getRemoteObject("foo.bar.Test", "/BadTest",
 						TestRemoteInterface.class);
 				System.out.println("Got Remote Name: " + tri.getName());
-				test.fail("Method Execution should have failed");
+				Test.fail("Method Execution should have failed");
 			} catch (UnknownObject UO) {
 				System.out.println("Remote Method Failed with: "
 						+ UO.getClass().getName() + " " + UO.getMessage());
@@ -927,7 +927,7 @@ public class test
 				tri = clientconn.getRemoteObject("foo.bar.Test", "/BadTest2",
 						TestRemoteInterface.class);
 				System.out.println("Got Remote Name: " + tri.getName());
-				test.fail("Method Execution should have failed");
+				Test.fail("Method Execution should have failed");
 			} catch (UnknownObject UO) {
 				System.out.println("Remote Method Failed with: "
 						+ UO.getClass().getName() + " " + UO.getMessage());
@@ -1057,13 +1057,13 @@ public class test
 			tri = clientconn.getRemoteObject("foo.bar.Test", "/Test",
 					TestRemoteInterface.class);
 			if (1 != tri2.overload("foo"))
-				test.fail("wrong overloaded method called");
+				Test.fail("wrong overloaded method called");
 			if (2 != tri2.overload((byte) 0))
-				test.fail("wrong overloaded method called");
+				Test.fail("wrong overloaded method called");
 			if (3 != tri2.overload())
-				test.fail("wrong overloaded method called");
+				Test.fail("wrong overloaded method called");
 			if (4 != tri.overload())
-				test.fail("wrong overloaded method called");
+				Test.fail("wrong overloaded method called");
 			System.out.println("done");
 
 			System.out.print("reg13291...");
@@ -1081,7 +1081,7 @@ public class test
 			List<List<Integer>> reti = tri2.checklist(lli);
 			if (reti.size() != 1 || reti.get(0).size() != 1
 					|| reti.get(0).get(0) != 1)
-				test.fail("Failed to check nested lists");
+				Test.fail("Failed to check nested lists");
 			System.out.println("done");
 
 			System.out.print("Testing dynamic object creation...");

@@ -12,7 +12,7 @@ package org.freedesktop.dbus.test;
 
 import org.freedesktop.dbus.DBusConnection;
 
-public class two_part_test_client
+public class TwoPartTestClient
 {
 	public static class two_part_test_object implements TwoPartObject
 	{

@@ -29,13 +29,13 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class cross_test_server
+public class CrossTestServer
 		implements DBus.Binding.Tests, DBus.Binding.SingleTests,
 		DBusSigHandler<DBus.Binding.TestClient.Trigger>
 {
 
 	final static Logger logger = LoggerFactory
-			.getLogger(cross_test_server.class);
+			.getLogger(CrossTestServer.class);
 
 	private DBusConnection conn;
 	boolean run = true;
@@ -75,7 +75,7 @@ public class cross_test_server
 		notdone.add("org.freedesktop.DBus.Binding.TestClient.Trigger");
 	}
 
-	public cross_test_server(DBusConnection conn)
+	public CrossTestServer(DBusConnection conn)
 	{
 		this.conn = conn;
 	}
@@ -352,7 +352,7 @@ public class cross_test_server
 	{
 		done.add("org.freedesktop.DBus.Binding.Tests.Primitize");
 		notdone.remove("org.freedesktop.DBus.Binding.Tests.Primitize");
-		return cross_test_client.PrimitizeRecurse(a.getValue(), a.getType());
+		return CrossTestClient.PrimitizeRecurse(a.getValue(), a.getType());
 	}
 
 	@Override
@@ -408,7 +408,7 @@ public class cross_test_server
 			DBusConnection conn = DBusConnection
 					.getConnection(DBusConnection.SESSION);
 			conn.requestBusName("org.freedesktop.DBus.Binding.TestServer");
-			cross_test_server cts = new cross_test_server(conn);
+			CrossTestServer cts = new CrossTestServer(conn);
 			conn.addSigHandler(DBus.Binding.TestClient.Trigger.class, cts);
 			conn.exportObject("/Test", cts);
 			synchronized (cts) {

@@ -18,10 +18,10 @@ import org.freedesktop.dbus.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class test_low_level
+public class TestLowLevel
 {
 
-	final static Logger logger = LoggerFactory.getLogger(test_low_level.class);
+	final static Logger logger = LoggerFactory.getLogger(TestLowLevel.class);
 
 	public static void main(String[] args) throws Exception
 	{
