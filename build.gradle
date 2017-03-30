@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
