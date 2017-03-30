@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
+    compile files('msg-classes')
 
     compile 'org.slf4j:slf4j-api:1.6.1'
 
