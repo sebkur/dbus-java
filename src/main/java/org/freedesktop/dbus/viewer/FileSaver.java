@@ -57,103 +57,82 @@ final class FileSaver implements Runnable
 	{
 		String overwritePolicy = null;
 		final Iterator<TextFile> iterator = textFiles.iterator();
-		while (iterator.hasNext())
-		{
+		while (iterator.hasNext()) {
 			final TextFile textFile = iterator.next();
 			String fileName = textFile.getFileName();
 			File fileToSave = new File(parentDirectory, fileName);
 			File parentFile = fileToSave.getParentFile();
-			if (parentFile.exists() || parentFile.mkdirs())
-			{
+			if (parentFile.exists() || parentFile.mkdirs()) {
 				boolean doSave = !fileToSave.exists()
 						|| OVERWRITE_ALL.equals(overwritePolicy);
-				if (!doSave && !SKIP_ALL.equals(overwritePolicy))
-				{
+				if (!doSave && !SKIP_ALL.equals(overwritePolicy)) {
 					String[] selectionValues;
-					if (iterator.hasNext())
-					{
+					if (iterator.hasNext()) {
 						selectionValues = new String[] { OVERWRITE,
 								OVERWRITE_ALL, SKIP, SKIP_ALL, CANCEL };
-					}
-					else
-					{
+					} else {
 						selectionValues = new String[] { OVERWRITE, CANCEL };
 					}
 					int option = JOptionPane.showOptionDialog(parentComponent,
 							"File exists: " + fileName, "Save",
 							JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null,
-							selectionValues, null);
-					if (option == -1)
-					{
+							JOptionPane.QUESTION_MESSAGE, null, selectionValues,
+							null);
+					if (option == -1) {
 						break;
 					}
 					overwritePolicy = selectionValues[option];
-					if (CANCEL.equals(overwritePolicy))
-					{
+					if (CANCEL.equals(overwritePolicy)) {
 						break;
 					}
 
 					doSave = OVERWRITE.equals(overwritePolicy)
 							|| OVERWRITE_ALL.equals(overwritePolicy);
 				}
-				if (doSave)
-				{
-					try
-					{
+				if (doSave) {
+					try {
 						String contents = textFile.getContents();
 						writeFile(fileToSave, contents);
-					}
-					catch (final IOException ex)
-					{
+					} catch (final IOException ex) {
 						/* Can't access parent directory for saving */
-						final String errorMessage = "Could not save "
-								+ fileName + ": " + ex.getLocalizedMessage();
-						if (iterator.hasNext())
-						{
+						final String errorMessage = "Could not save " + fileName
+								+ ": " + ex.getLocalizedMessage();
+						if (iterator.hasNext()) {
 
 							int confirm = JOptionPane.showConfirmDialog(
-									parentComponent, errorMessage
-											+ ".\n"+_("Try saving other files?"),
+									parentComponent,
+									errorMessage + ".\n"
+											+ _("Try saving other files?"),
 									_("Save Failed"),
 									JOptionPane.OK_CANCEL_OPTION,
 									JOptionPane.ERROR_MESSAGE);
-							if (confirm != JOptionPane.OK_OPTION)
-							{
+							if (confirm != JOptionPane.OK_OPTION) {
 								break;
 							}
-						}
-						else
-						{
+						} else {
 							JOptionPane.showMessageDialog(parentComponent,
 									errorMessage + ".", _("Save Failed"),
 									JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				}
-			}
-			else
-			{
+			} else {
 
-				final String errorMessage = _("Could not access parent directory for ")
-						+ fileName;
-				if (iterator.hasNext())
-				{
+				final String errorMessage = _(
+						"Could not access parent directory for ") + fileName;
+				if (iterator.hasNext()) {
 
-					int confirm = JOptionPane.showConfirmDialog(
-							parentComponent, errorMessage
-									+ ".\n"+_("Try saving other files?"),
+					int confirm = JOptionPane.showConfirmDialog(parentComponent,
+							errorMessage + ".\n" + _("Try saving other files?"),
 							_("Save Failed"), JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.ERROR_MESSAGE);
-					if (confirm != JOptionPane.OK_OPTION)
-					{
+					if (confirm != JOptionPane.OK_OPTION) {
 						break;
 					}
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(parentComponent, errorMessage
-							+ ".", _("Save Failed"), JOptionPane.ERROR_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(parentComponent,
+							errorMessage + ".", _("Save Failed"),
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -167,23 +146,16 @@ final class FileSaver implements Runnable
 	private void writeFile(File fileToSave, String contents) throws IOException
 	{
 		FileWriter fileWriter = null;
-		try
-		{
+		try {
 			fileWriter = new FileWriter(fileToSave);
 			BufferedWriter writer = new BufferedWriter(fileWriter);
 			writer.append(contents);
 			writer.flush();
-		}
-		finally
-		{
-			if (fileWriter != null)
-			{
-				try
-				{
+		} finally {
+			if (fileWriter != null) {
+				try {
 					fileWriter.close();
-				}
-				catch (IOException e1)
-				{
+				} catch (IOException e1) {
 				}
 			}
 		}

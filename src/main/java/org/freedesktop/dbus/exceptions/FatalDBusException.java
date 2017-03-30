@@ -13,8 +13,8 @@ package org.freedesktop.dbus.exceptions;
 @SuppressWarnings("serial")
 public class FatalDBusException extends DBusException implements FatalException
 {
-   public FatalDBusException(String message)
-   {
-      super(message);
-   }
+	public FatalDBusException(String message)
+	{
+		super(message);
+	}
 }

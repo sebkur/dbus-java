@@ -17,6 +17,7 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
  */
 public interface CallbackHandler<ReturnType>
 {
-   public void handle(ReturnType r);
-   public void handleError(DBusExecutionException e);
+	public void handle(ReturnType r);
+
+	public void handleError(DBusExecutionException e);
 }

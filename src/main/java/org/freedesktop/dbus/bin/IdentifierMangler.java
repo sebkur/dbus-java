@@ -17,27 +17,24 @@ import java.util.Arrays;
  */
 public class IdentifierMangler
 {
-   private static String[] keywords;
-   static {
-      keywords = new String[] {
-         "true","false","null",
-         "abstract","continue","for","new","switch",
-         "assert","default","goto","package","synchronized",
-         "boolean","do","if","private","this",
-         "break","double","implements","protected","throw",
-         "byte","else","import","public","throws",
-         "case","enum","instanceof","return","transient",
-         "catch","extends","int","short","try",
-         "char","final","interface","static","void",
-         "class","finally","long","strictfp","volatile",
-         "const","float","native","super","while"
-      };
-      Arrays.sort(keywords);
-   }
-   public static String mangle(String name)
-   {
-      if (Arrays.binarySearch(keywords, name) >= 0)
-         name = "_"+name;
-      return name;
-   }
+	private static String[] keywords;
+	static {
+		keywords = new String[] { "true", "false", "null", "abstract",
+				"continue", "for", "new", "switch", "assert", "default", "goto",
+				"package", "synchronized", "boolean", "do", "if", "private",
+				"this", "break", "double", "implements", "protected", "throw",
+				"byte", "else", "import", "public", "throws", "case", "enum",
+				"instanceof", "return", "transient", "catch", "extends", "int",
+				"short", "try", "char", "final", "interface", "static", "void",
+				"class", "finally", "long", "strictfp", "volatile", "const",
+				"float", "native", "super", "while" };
+		Arrays.sort(keywords);
+	}
+
+	public static String mangle(String name)
+	{
+		if (Arrays.binarySearch(keywords, name) >= 0)
+			name = "_" + name;
+		return name;
+	}
 }

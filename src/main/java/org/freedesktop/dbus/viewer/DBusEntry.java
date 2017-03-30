@@ -13,7 +13,8 @@ package org.freedesktop.dbus.viewer;
 import org.freedesktop.DBus.Introspectable;
 import org.freedesktop.dbus.UInt32;
 
-/** A summary class for a dbus entry for use in a table model
+/**
+ * A summary class for a dbus entry for use in a table model
  *
  * @author pete
  * @since 10/02/2006
@@ -21,7 +22,7 @@ import org.freedesktop.dbus.UInt32;
 public class DBusEntry
 {
 	private String name;
-	
+
 	private String path;
 
 	private UInt32 user;
@@ -30,16 +31,19 @@ public class DBusEntry
 
 	private Introspectable introspectable;
 
-	/** Assign the name
+	/**
+	 * Assign the name
 	 * 
-	 * @param name The name.
+	 * @param name
+	 *            The name.
 	 */
 	public void setName(String name)
 	{
 		this.name = name;
 	}
 
-	/** Retrieve the name
+	/**
+	 * Retrieve the name
 	 * 
 	 * @return The name.
 	 */
@@ -48,16 +52,19 @@ public class DBusEntry
 		return name;
 	}
 
-	/** Assign the user
+	/**
+	 * Assign the user
 	 * 
-	 * @param user The user.
+	 * @param user
+	 *            The user.
 	 */
 	public void setUser(UInt32 user)
 	{
 		this.user = user;
 	}
 
-	/** Retrieve the user
+	/**
+	 * Retrieve the user
 	 * 
 	 * @return The user.
 	 */
@@ -66,16 +73,19 @@ public class DBusEntry
 		return user;
 	}
 
-	/** Assign the owner
+	/**
+	 * Assign the owner
 	 * 
-	 * @param owner The owner.
+	 * @param owner
+	 *            The owner.
 	 */
 	public void setOwner(String owner)
 	{
 		this.owner = owner;
 	}
 
-	/** Retrieve the owner
+	/**
+	 * Retrieve the owner
 	 * 
 	 * @return The owner.
 	 */
@@ -84,16 +94,19 @@ public class DBusEntry
 		return owner;
 	}
 
-	/** Assign the introspectable
+	/**
+	 * Assign the introspectable
 	 * 
-	 * @param introspectable The introspectable.
+	 * @param introspectable
+	 *            The introspectable.
 	 */
 	public void setIntrospectable(Introspectable introspectable)
 	{
 		this.introspectable = introspectable;
 	}
 
-	/** Retrieve the introspectable
+	/**
+	 * Retrieve the introspectable
 	 * 
 	 * @return The introspectable.
 	 */
@@ -101,23 +114,25 @@ public class DBusEntry
 	{
 		return introspectable;
 	}
-	
+
 	/**
 	 * retrieve the path parameter
 	 * 
 	 * @return
 	 */
-	public String getPath() {
+	public String getPath()
+	{
 		return path;
 	}
-	
+
 	/**
 	 * set the path parameter
 	 * 
 	 * @param path
 	 */
-	public void setPath(String path) {
+	public void setPath(String path)
+	{
 		this.path = path;
 	}
-	
+
 }

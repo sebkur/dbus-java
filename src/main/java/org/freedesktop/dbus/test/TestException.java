@@ -17,8 +17,8 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 @SuppressWarnings("serial")
 public class TestException extends DBusExecutionException
 {
-   public TestException(String message)
-   {
-      super (message);
-   }
+	public TestException(String message)
+	{
+		super(message);
+	}
 }

@@ -26,6 +26,7 @@ class SaveFileAction extends TabbedSaveAction implements ChangeListener
 	private class SelectedTabIterator implements Iterator<TextFile>
 	{
 		boolean iterated = false;
+
 		/** {@inheritDoc} */
 		public boolean hasNext()
 		{
@@ -35,8 +36,7 @@ class SaveFileAction extends TabbedSaveAction implements ChangeListener
 		/** {@inheritDoc} */
 		public TextFile next()
 		{
-			if (iterated)
-			{
+			if (iterated) {
 				throw new NoSuchElementException(_("Already iterated"));
 			}
 			iterated = true;
@@ -54,9 +54,9 @@ class SaveFileAction extends TabbedSaveAction implements ChangeListener
 	SaveFileAction(JTabbedPane tabbedPane)
 	{
 		super(tabbedPane);
-		
+
 		enableAndSetName();
-		
+
 		tabbedPane.addChangeListener(this);
 	}
 

@@ -15,14 +15,53 @@ import java.util.Map;
 
 public class ProfilerInstance implements Profiler
 {
-   public boolean isRemote() { return false; }
-   public void array(int[] v) { return; }
-   public void stringarray(String[] v) { return; }
-   public void map(Map<String,String> m) { return; }
-   public void list(List<String> l) { return; }
-   public void bytes(byte[] b) { return; }
-   public void struct(ProfileStruct ps) { return; }
-   public void string(String s) { return; }
-   public void NoReply() { return; }
-   public void Pong() { return; }
+	public boolean isRemote()
+	{
+		return false;
+	}
+
+	public void array(int[] v)
+	{
+		return;
+	}
+
+	public void stringarray(String[] v)
+	{
+		return;
+	}
+
+	public void map(Map<String, String> m)
+	{
+		return;
+	}
+
+	public void list(List<String> l)
+	{
+		return;
+	}
+
+	public void bytes(byte[] b)
+	{
+		return;
+	}
+
+	public void struct(ProfileStruct ps)
+	{
+		return;
+	}
+
+	public void string(String s)
+	{
+		return;
+	}
+
+	public void NoReply()
+	{
+		return;
+	}
+
+	public void Pong()
+	{
+		return;
+	}
 }

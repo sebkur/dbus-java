@@ -16,14 +16,16 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 public interface TwoPartInterface extends DBusInterface
 {
-   public TwoPartObject getNew();
-   public class TwoPartSignal extends DBusSignal
-   {
-      public final TwoPartObject o;
-      public TwoPartSignal(String path, TwoPartObject o) throws DBusException
-      {
-         super (path, o);
-         this.o = o;
-      }
-   }
+	public TwoPartObject getNew();
+
+	public class TwoPartSignal extends DBusSignal
+	{
+		public final TwoPartObject o;
+
+		public TwoPartSignal(String path, TwoPartObject o) throws DBusException
+		{
+			super(path, o);
+			this.o = o;
+		}
+	}
 }

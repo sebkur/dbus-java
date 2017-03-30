@@ -22,6 +22,7 @@ class SaveAllAction extends TabbedSaveAction
 	private class TabIterator implements Iterator<TextFile>
 	{
 		private int i = 0;
+
 		/** {@inheritDoc} */
 		public boolean hasNext()
 		{
@@ -31,8 +32,7 @@ class SaveAllAction extends TabbedSaveAction
 		/** {@inheritDoc} */
 		public TextFile next()
 		{
-			if (hasNext())
-			{
+			if (hasNext()) {
 				int currentIndex = i;
 				i++;
 				return getTextFile(currentIndex);
@@ -58,5 +58,5 @@ class SaveAllAction extends TabbedSaveAction
 	{
 		return new TabIterator();
 	}
-	
+
 }

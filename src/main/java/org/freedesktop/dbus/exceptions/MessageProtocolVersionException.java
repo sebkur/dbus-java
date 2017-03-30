@@ -13,10 +13,11 @@ package org.freedesktop.dbus.exceptions;
 import java.io.IOException;
 
 @SuppressWarnings("serial")
-public class MessageProtocolVersionException extends IOException implements FatalException
+public class MessageProtocolVersionException extends IOException
+		implements FatalException
 {
-   public MessageProtocolVersionException(String message)
-   {
-      super(message);
-   }
+	public MessageProtocolVersionException(String message)
+	{
+		super(message);
+	}
 }

@@ -18,9 +18,9 @@ import org.freedesktop.DBus.Description;
  */
 public interface TestNewInterface extends DBusInterface
 {
-   /**
-    * A simple method with no parameters which returns a String
-    */
-   @Description("Simple test method")
-   public String getName();
+	/**
+	 * A simple method with no parameters which returns a String
+	 */
+	@Description("Simple test method")
+	public String getName();
 }

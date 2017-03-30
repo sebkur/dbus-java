@@ -16,11 +16,11 @@ package org.freedesktop.dbus.exceptions;
 @SuppressWarnings("serial")
 public class DBusException extends Exception
 {
-   /**
-    * Create an exception with the specified message
-    */
-   public DBusException(String message)
-   {
-      super(message);
-   }
+	/**
+	 * Create an exception with the specified message
+	 */
+	public DBusException(String message)
+	{
+		super(message);
+	}
 }
