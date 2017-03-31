@@ -76,6 +76,7 @@ public class DBusViewer
 		connections = new ArrayList<DBusConnection>(connectionTypes.size());
 
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			@SuppressWarnings("synthetic-access")
 			public void run()
 			{
@@ -127,6 +128,7 @@ public class DBusViewer
 			tabbedPane.addTab(key, label);
 		}
 		Runnable loader = new Runnable() {
+			@Override
 			@SuppressWarnings("synthetic-access")
 			public void run()
 			{
@@ -141,6 +143,7 @@ public class DBusViewer
 								owners, conn);
 
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							public void run()
 							{
 								int index = tabbedPane.indexOfTab(key);
@@ -165,6 +168,7 @@ public class DBusViewer
 					} catch (final DBusException e) {
 						e.printStackTrace();
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							public void run()
 							{
 								int index = tabbedPane.indexOfTab(key);
@@ -178,6 +182,7 @@ public class DBusViewer
 					} catch (final DBusExecutionException e) {
 						e.printStackTrace();
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							public void run()
 							{
 								int index = tabbedPane.indexOfTab(key);
@@ -230,7 +235,7 @@ public class DBusViewer
 			p.reset();
 
 			if (results.size() > 0) {
-				if (users)
+				if (users) {
 					try {
 						final UInt32 user = dbus.GetConnectionUnixUser(name);
 						for (DBusEntry entry : results) {
@@ -238,6 +243,7 @@ public class DBusViewer
 						}
 					} catch (DBusExecutionException DBEe) {
 					}
+				}
 				if (!name.startsWith(":") && owners) {
 					try {
 						final String owner = dbus.GetNameOwner(name);

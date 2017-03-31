@@ -50,6 +50,7 @@ final class IntrospectAction extends AbstractAction
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void valueChanged(ListSelectionEvent e)
 	{
 		if (!e.getValueIsAdjusting()) {
@@ -64,6 +65,7 @@ final class IntrospectAction extends AbstractAction
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 
@@ -74,6 +76,7 @@ final class IntrospectAction extends AbstractAction
 			final String xmlFile = entry.getName() + ".xml";
 			final Introspectable introspectable = entry.getIntrospectable();
 			new Thread(new Runnable() {
+				@Override
 				public void run()
 				{
 
@@ -113,6 +116,7 @@ final class IntrospectAction extends AbstractAction
 						introspectionPanel.add(southPanel, BorderLayout.SOUTH);
 
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							@SuppressWarnings("synthetic-access")
 							public void run()
 							{
@@ -125,6 +129,7 @@ final class IntrospectAction extends AbstractAction
 					} catch (final Exception e) {
 						e.printStackTrace();
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							@SuppressWarnings("synthetic-access")
 							public void run()
 							{
