@@ -87,10 +87,9 @@ final class IntrospectAction extends AbstractAction
 					try {
 						String xml = introspectable.Introspect();
 
-						String docType = Introspectables.DOCTYPE;
-
 						createInterface.createInterface(
-								new StringReader(xml.replace(docType, "")));
+								new StringReader(xml.replaceAll(
+										Introspectables.DOCTYPE_REGEX, "")));
 						final JTabbedPane tabbedPane = new JTabbedPane();
 
 						tabbedPane.addTab(xmlFile,

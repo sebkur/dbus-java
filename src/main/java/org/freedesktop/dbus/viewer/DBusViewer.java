@@ -309,8 +309,9 @@ public class DBusViewer
 			DBusEntry e = addEntry(name, path);
 			String introspectData = e.getIntrospectable().Introspect();
 
-			Document document = builder.parse(new InputSource(new StringReader(
-					introspectData.replace(Introspectables.DOCTYPE, ""))));
+			Document document = builder
+					.parse(new InputSource(new StringReader(introspectData
+							.replaceAll(Introspectables.DOCTYPE_REGEX, ""))));
 			Element root = document.getDocumentElement();
 
 			NodeList children = root.getChildNodes();
