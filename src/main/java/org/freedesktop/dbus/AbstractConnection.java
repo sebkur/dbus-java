@@ -185,9 +185,7 @@ public abstract class AbstractConnection
 				throw new DBus.Error.UnknownObject(
 						"Introspecting on non-existant object");
 			} else {
-				return "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" "
-						+ "\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
-						+ intro;
+				return Introspectables.DOCTYPE + "\n" + intro;
 			}
 		}
 	}

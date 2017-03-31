@@ -30,6 +30,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.freedesktop.DBus.Introspectable;
+import org.freedesktop.dbus.Introspectables;
 import org.freedesktop.dbus.bin.CreateInterface;
 
 @SuppressWarnings("serial")
@@ -86,7 +87,7 @@ final class IntrospectAction extends AbstractAction
 					try {
 						String xml = introspectable.Introspect();
 
-						String docType = "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">";
+						String docType = Introspectables.DOCTYPE;
 
 						createInterface.createInterface(
 								new StringReader(xml.replace(docType, "")));

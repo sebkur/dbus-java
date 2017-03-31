@@ -34,6 +34,7 @@ import org.freedesktop.dbus.BusAddress;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.DirectConnection;
 import org.freedesktop.dbus.Error;
+import org.freedesktop.dbus.Introspectables;
 import org.freedesktop.dbus.Marshalling;
 import org.freedesktop.dbus.Message;
 import org.freedesktop.dbus.MessageReader;
@@ -458,9 +459,7 @@ public class DBusDaemon extends Thread
 		@Override
 		public String Introspect()
 		{
-			return "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n"
-					+ "\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
-					+ "<node>\n"
+			return Introspectables.DOCTYPE + "\n<node>\n"
 					+ "  <interface name=\"org.freedesktop.DBus.Introspectable\">\n"
 					+ "    <method name=\"Introspect\">\n"
 					+ "      <arg name=\"data\" direction=\"out\" type=\"s\"/>\n"

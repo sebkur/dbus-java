@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.freedesktop.DBus;
 import org.freedesktop.DBus.Introspectable;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.Introspectables;
 import org.freedesktop.dbus.UInt32;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
@@ -261,8 +262,6 @@ public class DBusViewer
 		return model;
 	}
 
-	private final static String DOC_TYPE = "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">";
-
 	class ParsingContext
 	{
 		private DBusConnection conn;
@@ -310,8 +309,8 @@ public class DBusViewer
 			DBusEntry e = addEntry(name, path);
 			String introspectData = e.getIntrospectable().Introspect();
 
-			Document document = builder.parse(new InputSource(
-					new StringReader(introspectData.replace(DOC_TYPE, ""))));
+			Document document = builder.parse(new InputSource(new StringReader(
+					introspectData.replace(Introspectables.DOCTYPE, ""))));
 			Element root = document.getDocumentElement();
 
 			NodeList children = root.getChildNodes();
