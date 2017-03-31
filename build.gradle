@@ -22,9 +22,9 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', include: ['*.jar'])
     compile files('msg-classes')
 
+    compile 'com.github.hypfvieh:libmatthew:0.8.1'
     compile 'org.slf4j:slf4j-api:1.6.1'
 
     runtime 'org.slf4j:slf4j-log4j12:1.6.1'
