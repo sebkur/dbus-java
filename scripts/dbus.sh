@@ -2,7 +2,6 @@
 
 DIR=$(dirname $0)
 LIBS="$DIR/../build/lib-run"
-NATIVE="$DIR/../"
 MSGS="$DIR/../msg-classes"
 
 if [ ! -d "$LIBS" ]; then
@@ -12,4 +11,4 @@ fi
 
 CLASSPATH="$LIBS/*:$MSGS"
 
-exec java -cp "$CLASSPATH" -Djava.library.path="$NATIVE" "$@"
+exec java -cp "$CLASSPATH" "$@"
