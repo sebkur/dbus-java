@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR=$(dirname $0)
-LIBS="$DIR/../build/lib-run"
+LIBS="$DIR/../exe/build/lib-run"
 MSGS="$DIR/../msg-classes"
 
 if [ ! -d "$LIBS" ]; then
