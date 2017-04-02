@@ -1,8 +1,11 @@
-package org.freedesktop;
+package org.freedesktop.dbus.bin;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.freedesktop.DBus;
+import org.freedesktop.UDisks;
+import org.freedesktop.DBus.Properties;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.UInt64;
