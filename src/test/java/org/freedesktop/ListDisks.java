@@ -1,5 +1,6 @@
 package org.freedesktop;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.freedesktop.dbus.DBusConnection;
@@ -23,6 +24,7 @@ public class ListDisks
 				UDisks.class);
 
 		Path[] paths = disks.EnumerateDevices();
+		Arrays.sort(paths);
 
 		for (Path path : paths) {
 			UDisks.Device disk = conn.getRemoteObject(idDisks, path.getPath(),
