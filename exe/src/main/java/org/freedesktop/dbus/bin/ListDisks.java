@@ -1,5 +1,7 @@
 package org.freedesktop.dbus.bin;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -106,16 +108,30 @@ public class ListDisks
 	{
 		long s = size.longValue();
 		if (s > 1000000000) {
-			long m = s / 1000000000;
-			return Long.toString(m) + "G";
+			double g = s / 1000000000.;
+			return size(g, "G");
 		} else if (s > 1000000) {
-			long m = s / 1000000;
-			return Long.toString(m) + "M";
+			double m = s / 1000000.;
+			return size(m, "M");
 		} else if (s > 1000) {
-			long k = s / 1000;
-			return Long.toString(k) + "K";
+			double k = s / 1000.;
+			return size(k, "K");
 		}
 		return Long.toString(s);
+	}
+
+	private static NumberFormat nf;
+	static {
+		nf = NumberFormat.getNumberInstance();
+		DecimalFormat df = (DecimalFormat) nf;
+		df.setMinimumFractionDigits(1);
+		df.setMaximumFractionDigits(2);
+		df.setGroupingUsed(false);
+	}
+
+	private static String size(double size, String unit)
+	{
+		return nf.format(size) + unit;
 	}
 
 }
