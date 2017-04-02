@@ -13,14 +13,6 @@ dependencies {
     testRuntime 'log4j:log4j:1.2.16'
 }
 
-eclipse.classpath.file.withXml { XmlProvider provider ->
-    provider.asNode().classpathentry.findAll{it.'@path'.contains('lib/unix-0.5.jar')}
-    .each {
-        it.appendNode('attributes')
-                .appendNode('attribute', [name:'org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY', value:'dbus'])
-    }
-}
-
 jar {
     from("msg-classes") {
         include '**/*.class'
