@@ -1,5 +1,25 @@
-D-Bus Java README
------------------
+# D-Bus Java README
+
+This is an evolution of the Java DBus bindings originally developed by
+Matthew Johnson from 2006 to 2009 which is listed on the
+[DBusBindings page](https://www.freedesktop.org/wiki/Software/DBusBindings/)
+on freedesktop.org and available through [this repository](https://cgit.freedesktop.org/dbus/dbus-java/).
+
+The following things have been changed:
+
+* Use gradle for building the project
+* Get dependency jars from Maven repositories
+* Replace the logging scheme with slf4j
+* Use camel case names for all classes
+* Formatted code
+* Eliminate usage of `java.util.Vector`
+* Reduce errors concerning DTD validation
+
+Also some features have been added:
+
+* Some utilities for listing UDisk devices
+
+## Old, outdated README content
 
 Compilation and installation is described in the INSTALL file.
 
@@ -28,5 +48,3 @@ shared library in your library path. With the default install paths you may
 have to do something like:
 
 java -cp /usr/local/share/java/dbus.jar:/usr/local/share/java/unix.jar:/usr/local/share/java/debug-disable.jar -Djava.library.path=/usr/local/lib/jni
-
-
