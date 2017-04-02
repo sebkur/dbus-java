@@ -107,7 +107,10 @@ public class ListDisks
 	private static String size(UInt64 size)
 	{
 		long s = size.longValue();
-		if (s > 1000000000) {
+		if (s > 1000000000000L) {
+			double g = s / 1000000000000.;
+			return size(g, "T");
+		} else if (s > 1000000000) {
 			double g = s / 1000000000.;
 			return size(g, "G");
 		} else if (s > 1000000) {
