@@ -19,6 +19,10 @@ Also some features have been added:
 
 * Some utilities for listing UDisk devices
 
+## See also
+
+More information is available in the [changelog](changelog.md) and the [TODO](TODO.md) list.
+
 ## Old, outdated README content
 
 Compilation and installation is described in the INSTALL file.
