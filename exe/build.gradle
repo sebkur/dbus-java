@@ -18,6 +18,7 @@ task copyJars(type: Copy) {
 task copyDeps(type: Copy) {
     into "$buildDir/lib-run"
     from configurations.runtime
+    exclude "*.class"
 }
 
 task createRuntime(dependsOn: [copyJars, copyDeps]) {

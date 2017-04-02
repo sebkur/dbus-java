@@ -21,6 +21,12 @@ eclipse.classpath.file.withXml { XmlProvider provider ->
     }
 }
 
+jar {
+    from("msg-classes") {
+        include '**/*.class'
+    }
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
