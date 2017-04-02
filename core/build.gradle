@@ -1,0 +1,47 @@
+if (project.hasProperty("topobyte")) {
+    apply from: 'file:///' + System.getProperty("user.home") \
+        + '/.gradle/topobyte.gradle'
+}
+
+dependencies {
+    compile files('msg-classes')
+
+    compile 'com.github.hypfvieh:libmatthew:0.8.1'
+    compile 'org.slf4j:slf4j-api:1.6.1'
+
+    testRuntime 'org.slf4j:slf4j-log4j12:1.6.1'
+    testRuntime 'log4j:log4j:1.2.16'
+}
+
+eclipse.classpath.file.withXml { XmlProvider provider ->
+    provider.asNode().classpathentry.findAll{it.'@path'.contains('lib/unix-0.5.jar')}
+    .each {
+        it.appendNode('attributes')
+                .appendNode('attribute', [name:'org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY', value:'dbus'])
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+def pomInfo = new XmlSlurper().parse(new File('info.pom'));
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.project {
+                    name pomInfo.name
+                    description pomInfo.description
+                    url pomInfo.url
+                }
+            }
+        }
+    }
+}

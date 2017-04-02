@@ -1,1 +1,3 @@
-rootProject.name = pName
+include 'core', 'exe'
+project(':core').name = 'dbus-java'
+project(':exe').name = 'dbus-java-exe'
