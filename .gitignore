@@ -6,3 +6,4 @@ build
 .settings
 *.swp
 /core/msg-classes
+/manpages
