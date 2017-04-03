@@ -23,15 +23,16 @@ import org.freedesktop.dbus.Message;
 import org.freedesktop.dbus.MethodCall;
 import org.freedesktop.dbus.Transport;
 
-public class Caller
+public class DBusCall
 {
+
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args)
 	{
 		try {
 			if (args.length < 4) {
 				System.out.println(
-						"Syntax: Caller <dest> <path> <interface> <method> [<sig> <args>]");
+						"Syntax: DBusCall <dest> <path> <interface> <method> [<sig> <args>]");
 				System.exit(1);
 			}
 			String addr = System.getenv("DBUS_SESSION_BUS_ADDRESS");
@@ -41,7 +42,7 @@ public class Caller
 			Message m = new MethodCall("org.freedesktop.DBus",
 					"/org/freedesktop/DBus", "org.freedesktop.DBus", "Hello",
 					(byte) 0, null);
-			;
+
 			conn.mout.writeMessage(m);
 
 			if ("".equals(args[2])) {
@@ -88,4 +89,5 @@ public class Caller
 			System.exit(1);
 		}
 	}
+
 }

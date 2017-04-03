@@ -2,6 +2,6 @@
 
 DIR=$(dirname $0)
 CMD="$DIR/dbus.sh"
-CLASS="org.freedesktop.dbus.bin.Caller"
+CLASS="org.freedesktop.dbus.bin.DBusCall"
 
 exec "$CMD" "$CLASS" "$@"
