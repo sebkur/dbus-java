@@ -40,6 +40,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.freedesktop.DBus.Introspectable;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Marshalling;
+import org.freedesktop.dbus.XmlUtil;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.types.DBusStructType;
@@ -840,6 +841,7 @@ public class CreateInterface
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
+		XmlUtil.disableDtdTypeResolving(builder);
 		Document document = builder.parse(new InputSource(introspectdata));
 
 		Element root = document.getDocumentElement();

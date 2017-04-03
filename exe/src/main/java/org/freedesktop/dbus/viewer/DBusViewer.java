@@ -38,8 +38,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.freedesktop.DBus;
 import org.freedesktop.DBus.Introspectable;
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.Introspectables;
 import org.freedesktop.dbus.UInt32;
+import org.freedesktop.dbus.XmlUtil;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.w3c.dom.Document;
@@ -275,6 +275,7 @@ public class DBusViewer
 					.newInstance();
 			try {
 				builder = factory.newDocumentBuilder();
+				XmlUtil.disableDtdTypeResolving(builder);
 			} catch (ParserConfigurationException e1) {
 				// TODO Auto-generated catch block
 				throw new RuntimeException(
@@ -310,8 +311,7 @@ public class DBusViewer
 			String introspectData = e.getIntrospectable().Introspect();
 
 			Document document = builder
-					.parse(new InputSource(new StringReader(introspectData
-							.replaceAll(Introspectables.DOCTYPE_REGEX, ""))));
+					.parse(new InputSource(new StringReader(introspectData)));
 			Element root = document.getDocumentElement();
 
 			NodeList children = root.getChildNodes();

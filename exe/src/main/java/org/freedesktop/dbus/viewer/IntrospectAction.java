@@ -30,7 +30,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.freedesktop.DBus.Introspectable;
-import org.freedesktop.dbus.Introspectables;
 import org.freedesktop.dbus.bin.CreateInterface;
 
 @SuppressWarnings("serial")
@@ -87,9 +86,7 @@ final class IntrospectAction extends AbstractAction
 					try {
 						String xml = introspectable.Introspect();
 
-						createInterface.createInterface(
-								new StringReader(xml.replaceAll(
-										Introspectables.DOCTYPE_REGEX, "")));
+						createInterface.createInterface(new StringReader(xml));
 						final JTabbedPane tabbedPane = new JTabbedPane();
 
 						tabbedPane.addTab(xmlFile,
