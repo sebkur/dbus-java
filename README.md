@@ -27,17 +27,21 @@ More information is available in the [changelog](changelog.md) and the [TODO](TO
 
 The installed programs are documented in their respective man pages.
 
+**ListDBus** lists the names currently connected to a bus.
+
 **CreateInterface** is a tool for creating interface stubs for D-Bus programs. It
 will connect to services running on the bus and introspect on them to find
 their API. This will then be written as Java interface definitions suitable for
 importing into your program. A file containing the introspection data can be
 used instead.
 
-**ListDBus** lists the names currently connected to a bus.
-
 **DBusViewer** is a graphical tool which combines the two tools. It will list the
 names on a bus and allow you to introspect on them and save the result as Java
 interface files. This currently only introspects on the root object, however.
+
+**DBusCall** can be used to execute methods on D-Bus objects.
+
+**ListDisks** is a tool that lists disks by analyzing the udisks namespace.
 
 ## Old, outdated README content
 
